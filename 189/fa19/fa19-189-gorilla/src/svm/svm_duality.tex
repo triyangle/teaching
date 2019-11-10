@@ -1,0 +1,118 @@
+\Question{SVM Dual}
+Recall that convex optimizations have a primal form and an associated dual form:
+
+\begin{align*}
+\min_{x} f(x) && \max_{\alpha} \min_{x} \mathcal{L}(x, \alpha)\\
+\text{s.t. } g(x) \leq 0 && \text{s.t. } \alpha \geq 0
+\end{align*}
+
+where $\mathcal{L}(x, \alpha) = f(x) + \alpha g(x)$ is known as the Lagrangian of the primal. These two formulations have equivalent optimal values if KKT conditions are satisfied.
+
+For the dual to be optimal, we need the KKT conditions:
+
+\begin{enumerate}
+\item Stationary: $\frac{d\mathcal{L}}{dx} = \frac{df(x)}{dx} + \alpha^T \frac{dg(x)}{dx} = 0$
+\item Primal feasibility: $g(x) \leq 0$
+\item Dual feasibility: $\alpha \geq 0$
+\item Complementary slackness: $\alpha_i g(x)_i = 0$
+\end{enumerate}
+
+Using this knowledge, you will now derive dual SVM.
+
+\begin{Parts}
+\Part
+The primal problem of SVM is of the form
+\begin{align*}
+\max_{w, t \xi} \varepsilon(w, t, \xi) = \max_{w, t, \xi} & \frac{1}{2} ||w||_2^2 + C \sum_{i=1}^n \xi_i\\
+\text{s.t. } &y_i(w \cdot x_i - t) \geq 1 - \xi_i\\
+& \xi_i \geq 0
+\end{align*}
+
+What is the Lagrangian $\mathcal{L}(w, t, \xi, \alpha, \beta)$ for the primal? Use as your Lagrange multipliers $\alpha_i$ for the $y_i(w \cdot x_i - t) \geq 1 - \xi_i$ constraint, and $\beta_i$ for the $\xi_i \geq 0$ constraint.
+
+\begin{solution}
+We can rewrite the constraint $y_i(w \cdot x_i - t) \geq 1 - \xi_i$ as $(1 - \xi_i) - y_i(w \cdot x_i - t) \leq 0$ to get it into the form listed at the beginning of the problem. Now, we know the Lagrangian is simply
+
+\begin{align*}
+\mathcal{L}(w, t, \xi, \alpha, \beta) &= \frac{1}{2} ||w||_2^2 + C \sum_{i=1}^n \xi_i + \sum_{i=1}^n \alpha_i(-y_i(w \cdot x_i - t) + (1 - \xi_i)) + \sum_{i=1}^n \beta_i (-\xi_i) \\
+&= \frac{1}{2} ||w||_2^2 - \sum_{i=1}^n \alpha_iy_i(w \cdot x_i - t)  + \sum_{i=1}^n \alpha_i + \sum_{i=1}^n (C - \alpha_i - \beta_i) \xi_i
+\end{align*}
+\end{solution}
+
+\Part
+Using the KKT conditions, derive the value of $w$ in terms of dual variables $\alpha_i$ at the optimal point. What is significant about this value of $w$? Furthermore, prove that at the optimum for the dual, $0 \leq \alpha_i \leq C$ and $\sum_{i=1}^n \alpha_i y_i = 0$.
+
+\begin{solution}
+Using the first KKT condition, we can take gradients/partial derivatives with respect to $w$, $t$, and $\xi_i$ and set them to 0 to derive conditions at the optimal point.
+To see why we use the gradients of the objective function and the constraint to determine the optimal point, see \url{https://en.wikipedia.org/wiki/Lagrange_multiplier#Single_constraint}.
+
+We know that $\frac{d\mathcal{L}}{dw} = w - \sum_{i=1}^n \alpha_i y_i x_i = 0$. Thus, at optimal, $w = \sum_{i=1}^n \alpha_i y_i x_i$. This is significant because we've now shown that at optimal, the weight vector $w$ can be written as a linear combination of the sample points $x_i$.
+
+Similarly, $\frac{d\mathcal{L}}{dt} = \sum_{i=1}^n \alpha_i y_i$, so at optimal, $\sum_{i=1}^n \alpha_i y_i = 0$.
+
+Lastly, $\frac{d\mathcal{L}}{d\xi_i} = C - \alpha_i - \beta_i$, so $C - \alpha_i - \beta_i = 0$ at optimum.
+
+Since by the third KKT condition $\alpha_i$ and $\beta_i$ must be dual feasible, or $\alpha_i \geq 0$ and $\beta_i \geq 0$, we have that $\alpha_i = C - \beta_i$ where $\beta_i \geq 0$, which must mean that $\alpha_i \leq C$. Thus, $0 \leq \alpha_i \leq C$ at optimum.
+\end{solution}
+
+\Part
+Write the dual problem for SVM in terms of the dual variables $\alpha = \begin{bmatrix}\alpha_1 & \ldots & \alpha_n \end{bmatrix}^T$ and matrix $Q$, where $Q_{ij} = y_i y_j (x_i^Tx_j)$.
+
+\begin{solution}
+From part (a), we have:
+\begin{align*}
+\mathcal{L}(w, t, \xi, \alpha, \beta) &= \frac{1}{2} ||w||_2^2 - \sum_{i=1}^n \alpha_iy_i(w \cdot x_i - t)  + \sum_{i=1}^n \alpha_i + \sum_{i=1}^n (C - \alpha_i - \beta_i) \xi_i \\
+&= \frac{1}{2} ||w||_2^2 - \sum_{i=1}^n \alpha_iy_i w \cdot x_i - t \sum_{i=1}^n \alpha_iy_i  + \sum_{i=1}^n \alpha_i + \sum_{i=1}^n (C - \alpha_i - \beta_i) \xi_i \\
+\end{align*}
+
+From part (b), we found that $\sum_{i=1}^n \alpha_iy_i = 0$ at optimum. Thus, $t \sum_{i=1}^n \alpha_iy_i = 0$ at optimum as well.
+
+Similarly, we also found in part (b) that $C - \alpha_i - \beta_i = 0$ at optimum. Thus, $\sum_{i=1}^n (C - \alpha_i - \beta_i) \xi_i = 0$ at optimum.
+
+Further, we showed in part (b) that $w$ at optimum is $w = \sum_{i=1}^n \alpha_i y_i x_i$.
+
+Plugging all of this in, we have:
+\begin{align*}
+\min_{w, t, \xi} \mathcal{L}(w, t, \xi, \alpha, \beta) &= \frac{1}{2} ||w||_2^2 - \sum_{i=1}^n \alpha_iy_i (w \cdot x_i) + \sum_{i=1}^n \alpha_i \\
+&= \frac{1}{2} ||\sum_{i=1}^n \alpha_i y_i x_i||_2^2 - \sum_{i=1}^n \alpha_iy_i ((\sum_{j=1}^n \alpha_j y_j x_j) \cdot x_i) + \sum_{i=1}^n \alpha_i \\
+&= \frac{1}{2} \sum_{i=1}^n \alpha_iy_i ((\sum_{j=1}^n \alpha_j y_j x_j) \cdot x_i)  - \sum_{i=1}^n \alpha_iy_i ((\sum_{j=1}^n \alpha_j y_j x_j) \cdot x_i) + \sum_{i=1}^n \alpha_i \\
+&= -\frac{1}{2} \sum_{i=1}^n \alpha_iy_i ((\sum_{j=1}^n \alpha_j y_j x_j) \cdot x_i) + \sum_{i=1}^n \alpha_i \\
+&= -\frac{1}{2} \alpha^T Q \alpha + 1^T \alpha \\
+\end{align*}
+
+And so, since our dual problem is $\max_{\alpha} \min_{w, t, \xi} \mathcal{L}(w, t, \xi, \alpha, \beta)$, we have:
+\begin{align*}
+\max_{\alpha} &-\frac{1}{2} \alpha^T Q \alpha + 1^T \alpha\\
+\text{s.t. } &0 \leq \alpha_i \leq C\\
+&\sum_{i=1}^n \alpha_i y_i x_i = 0
+\end{align*}
+\end{solution}
+
+\Part
+Prove the following:\\
+(Hint: use the ``Complementary slackness" KKT condition)
+
+\begin{enumerate}
+\item[i.] $\alpha_i = 0$ means $x_i$ is on or outside of the margin.
+
+\begin{solution}
+We know at optimum that $C - \alpha_i - \beta_i = 0$, but if $\alpha_i = 0$, then $C = \beta_i \neq 0$. By complementary slackness, $\beta_i \neq 0$ must mean that $\xi_i = 0$, which we know means $x_i$ is on or outside of the margin.
+\end{solution}
+
+\item[ii.] $\alpha_i = C$ means $x_i$ violates the margin.
+
+\begin{solution}
+Like part (i), $C - \alpha_i - \beta_i = 0$, but if $\alpha_i = C$, then $\beta_i = 0$. By complementary slackness, $\beta_i = 0$ must mean that $\xi_i \neq 0$, which we know means $x_i$ must violate the margin.
+\end{solution}
+
+\item[iii.] $0 < \alpha_i < C$ means $x_i$ is a support vector.
+
+\begin{solution}
+Since $C - \alpha_i - \beta_i = 0$, this must mean that $\beta_i = C - \alpha_i  > 0$, and thus $\xi_i = 0$. Further, since $\alpha > 0$, this must mean that by complementary slackness that $y_i(w \cdot x_i - t) - 1 = 0$, and thus $y_i(w \cdot x_i - t) = 1$, which means this $x_i$ must be a support vector.
+\end{solution}
+
+\end{enumerate}
+
+\end{Parts}
+
+\newpage

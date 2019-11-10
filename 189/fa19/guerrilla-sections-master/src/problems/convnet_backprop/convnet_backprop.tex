@@ -1,0 +1,80 @@
+\Question{Convnet Backprop}
+
+\begin{tikzpicture}
+    \tikzset{node style/.style={state,
+            inner sep=0pt
+            max width=0.5cm}}
+    \node[state] at (0, 0) (x1) {$x_1$};
+    \node[state] at (0, -1.5) (x2) {$x_2$};
+    \node[state] at (0, -3) (x3) {$x_3$};
+    \node[state] at (0, -4.5) (x4) {$x_4$};
+    \node[state] at (0, -6) (x5) {$x_5$};
+    \node at (0,-6.7) {\vdots};
+    
+    \node[state] at (3, -1.5) (v1) {$v_1$};
+    \node[state] at (3, -3) (v2) {$v_2$};
+    \node[state] at (3, -4.5) (v3) {$v_3$};
+    \node[state] at (3, -6) (v4) {$v_4$};
+    \node at (3,-6.7) {\vdots};
+    
+    \node[state] at (6, -1.5) (w1) {$w_1$};
+    \node[state] at (6, -3) (w2) {$w_2$};
+    \node[state] at (6, -4.5) (w3) {$w_3$};
+    \node at (6,-5.2) {\vdots};
+    
+    \node[state] at (9, -1.5) (z) {$z$};
+    
+    \draw[left=15mm, above=1cm, loosely dashed]
+        (x1) edge[solid] node {$c_1$} (v1)
+        (x2) edge[solid] node {$c_2$} (v1)
+        (x3) edge[solid] node {$c_3$} (v1)
+        (x4) edge[solid] node {$c_4$} (v1)
+        (x5) edge[solid] node {$c_5$} (v1)
+        
+        (v1) edge[solid] node {} (w1)
+        (v2) edge[solid] node {} (w1)
+        (v3) edge[solid] node {} (w1)
+        (v4) edge[solid] node {} (w1)
+        
+        (w1) edge[solid] node {$f_1$} (z)
+        (w2) edge[solid] node {$f_2$} (z)
+        (w3) edge[solid] node {$f_3$} (z);
+    
+\end{tikzpicture} \\
+
+Suppose we have the convolutional neural network given above. Starting with an input vector of length 20, we perform convolution with a filter of size 5 such that $v_i = s(\sum_{j=1}^5 c_j x_{i+j-1})$. We then mean pool every 4 nodes with stride 4 such that $w_i = \dfrac{1}{4} \sum_{j=1}^4 v_{4(i-1)+j}$. Finally we have a fully connected layer that produces a single output, $z = \sum_{i=1} w_i f_i$. We perform gradient descent on our loss function $R = (y-z)^2$ where y is the training label for x.
+
+\begin{Parts}
+\Part Calculate the number of nodes in each layer.
+\begin{solution}
+In the convolutional layer, we have $20 - 5 + 1 = 16$ nodes. In the pooling layer, we have $16 \times \frac{1}{4} = 4$ nodes.
+\end{solution}
+
+\Part What is the total number of parameters(weights) in the network? Assume there are no bias terms.
+\begin{solution}
+In the first layer there are 5 parameters (we learn the convolutional filter). There are no parameters in the mean pooling layer. There are 4 parameters in the fully connected layer. Thus we have a total of 9 parameters in this network.
+\end{solution}
+
+\Part Compute $\dfrac{\partial R}{\partial f_i}$
+\begin{solution}
+\begin{align*}
+    \frac{\partial R}{\partial f_i} = -2(y-z)f_i
+\end{align*}
+\end{solution}
+
+\Part Vectorize $\dfrac{\partial R}{\partial f}$
+\begin{solution}
+\begin{align*}
+    \frac{\partial R}{\partial f} = -2(y-z)f
+\end{align*}
+\end{solution}
+\Part Compute $\dfrac{\partial R}{\partial c_k}$
+\begin{solution}
+\begin{align*}
+    \frac{\partial R}{\partial c_k} &= \frac{\partial R}{\partial z} \frac{\partial z}{\partial c_k} \\
+    &= \frac{\partial R}{\partial z} \sum_{i=1}^4 \frac{\partial z}{\partial w_i} \frac{\partial w_i}{\partial c_k} \\
+    &= \frac{\partial R}{\partial z} \sum_{i=1}^4 \frac{\partial z}{\partial w_i} \sum_{j=1}^4 \frac{\partial w_i}{\partial v_{j+4(i-1)}} \frac{\partial v_{j+4(i-1)}}{\partial c_k}\\
+    &= -2(y-z) \sum_{i=1}^4 f_i \sum_{j=1}^4 \frac{1}{4} v_{j+4(i-1)} (1 - v_{j+4(i-1)}) x_{j+4(i-1) + k - 1}\\
+\end{align*}
+\end{solution}
+\end{Parts}

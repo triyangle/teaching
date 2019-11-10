@@ -1,0 +1,21 @@
+\Question{Bias Variance Decomposition}
+Let $Y$ follow a jointly normal distribution as $ \mathcal N(\mu,\Sigma)$ where $Y, \ \mu \in \mathbb R^n$ and $\Sigma \in \mathbb R^{nxn} $. Let $\hat Y$ be a generic estimator of $Y$ where $\hat Y \sim \mathcal N(\mathbb E[\hat Y], \hat{\Sigma})$  and $\hat Y \in \mathbb R^n$, and $\hat \Sigma \in \mathbb R^{nxn}$. Prove that the MSE is equal to, 
+$$ \mathbb E[\|Y - \hat Y \|^2_2]  = \|\mu - \mathbb E[\hat Y]\|^2_2 + Tr(\hat \Sigma) + Tr(\Sigma)$$
+
+where $Tr(A)$ is the trace of a matrix A. The expectation here is taken over both variables $Y$ and $\hat Y$ thus apply iterated expectation. Recall what each term of the right hand side is analogous to -- bias squared and variance of the estimator and the irreducible error of $Y$, respectively.
+
+\begin{solution}
+    $$ \mathbb E[\|Y - \hat Y \|^2_2] = \mathbb E_{\hat Y}[E_{Y}[\|Y - \hat Y \|^2_2|\hat Y]]$$
+    $$ \mathbb E_{Y}[\|Y - \hat Y \|^2_2|\hat Y] = \mathbb E[\sum_{i=1}^{n} (Y_i - \hat Y_i)^2 |\hat Y] = $$ 
+    $$ = \sum_{i=1}^{n} \mathbb E[Y_i^2] - 2\hat Y_i \mathbb E[Y_i]  + \hat Y_i^2 = \sum_{i=1}^{n} Var[Y_i] + \mathbb E[Y_i]^2 - 2\hat Y_i \mu_i  + \hat Y_i^2 = \sum_{i=1}^{n} Var[Y_i] + \mu_i^2 - 2\hat Y_i \mu_i  + \hat Y_i^2
+    $$
+    $$ \mathbb E_{\hat Y}[E_{Y}[\|Y - \hat Y \|^2_2|\hat Y]] = \mathbb E_{\hat Y} [\sum_{i=1}^{n} Var[Y_i] + \mu_i^2 - 2\hat Y_i \mu_i  + \hat Y_i^2] = \sum_{i=1}^{n} Var[Y_i] + \mu_i^2 - 2\mu_i \mathbb E[\hat Y_i]   + \mathbb E[\hat Y_i^2] =
+    $$
+    $$ = \sum_{i=1}^{n} Var[Y_i] + \mu_i^2 - 2\mu_i \mathbb E[\hat Y_i]   + Var[\hat Y_i] + \mathbb E[\hat Y_i]^2 = \sum_{i=1}^{n} Var[Y_i] + Var[\hat Y_i] + \mu_i^2 - 2\mu_i \mathbb E[\hat Y_i] + \mathbb E[\hat Y_i]^2
+    $$
+    $$ = \sum_{i=1}^{n} Var[Y_i] + Var[\hat Y_i] + (\mu_i - \mathbb E[\hat Y_i])^2 = Tr(\Sigma) + Tr(\hat \Sigma) + \|\mu - \mathbb E[\hat Y]\|_2^2
+    $$
+\end{solution}
+
+
+

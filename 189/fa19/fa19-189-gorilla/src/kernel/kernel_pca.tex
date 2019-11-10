@@ -1,0 +1,70 @@
+% \DeclareMathOperator{\Tr}{Tr}
+\newcommand*{\inner}[2]{\langle #1,#2\rangle}
+
+\Question{Kernel PCA}
+
+Let $X \in \mathbb{R}^{n \times d}$ be a matrix with rows $x_1^T \ldots x_n^T$, and $\phi: X \longrightarrow X'$ be a feature map with associated kernel $k(x, y) = \inner{\phi(x_1)} {\phi(x_2)}$. We will attempt to perform kernel PCA on $X$ using the feature mapping $\phi$. For this problem, assume that the data is already centered.
+
+\begin{Parts}
+\Part Let $\Sigma = \frac{1}{n} \sum_{i=1}^n x_i x_i^T$ be the sample covariance matrix. Recall that performing PCA involves solving for the eigenvectors and eigenvalues of $\Sigma$.
+
+Show if $v$ is a solution (an eigenvector of $\Sigma$, e.g. $\Sigma v = \lambda v$), then $v$ is in the range of $X^T$, or $v = X^T \alpha$ for some $\alpha$.
+
+\begin{solution}
+
+\begin{align*}
+\Sigma v = \frac{1}{n} \sum_{i=1}^n (x_i x_i^T) v=  \sum_{i=1}^n \frac{1}{n} x_i \inner{v}{x_i} = X^T \alpha
+\end{align*}
+
+where $\alpha_i = \frac{1}{n} \inner{v}{x_i}$.
+
+\end{solution}
+
+\Part Show if $(\alpha, \lambda)$ is a solution to $X X^T \alpha = \lambda \alpha$, then $(v=X^T \alpha, \lambda)$ solves $X^T X v = \lambda v$.
+
+\begin{solution}
+
+If $(\alpha, \lambda)$ solves $X X^T \alpha = \lambda \alpha$, then $Xv = \lambda \alpha$ and by left multiplying each side by $X^T$, we have $X^T X v = \lambda X^T \alpha = \lambda v$.
+
+\end{solution}
+
+\Part Kernel PCA solves $\phi(\Sigma) v = \lambda v$, where $\phi(\Sigma) = \frac{1}{n} \sum_{i=1}^n \phi(x_i) \phi(x_i)^T$. Explain how to find all $\lambda$ satisfying this equation without explicitly computing $\phi(x)$.
+
+\begin{solution}
+
+By the second problem, we know we can just solve $\phi(X) \phi(X)^T \alpha = \lambda \alpha$ where $\phi(X)$ is just a matrix with rows $\phi(x_i)^T$. Notice that $(\phi(X) \phi(X)^T)_{i,j} = k(x_i, x_j) = K_{i, j}$, where $K$ is our kernel matrix. Thus we can compute our kernel matrix $K$, and then solve $K \alpha = \lambda \alpha$.
+
+\end{solution}
+
+\Part In regular PCA, the projection coefficient of $x$ onto a principal component $v$ is $\inner{x}{v}$. In feature space, the coefficient is $\inner{\phi(x)}{v}$. How do we compute this without explicitly computing $\phi(x)$?
+
+\begin{solution}
+
+\begin{align*}
+\inner{v}{\phi(x)} &= \inner{\phi(X)^T \alpha}{\phi(x)} \\
+&= \alpha^T \phi(X) \phi(x) \\
+&= \alpha^T \begin{bmatrix} \inner{\phi(x_1)}{\phi(x)} \\ \vdots \\ \inner{\phi(x_n)}{\phi(x)} \end{bmatrix} \\ 
+&= \alpha^T \begin{bmatrix} k(x_1, x) \\ \vdots \\ k(x_n, x) \end{bmatrix} \\
+\end{align*}
+
+With this formulation, we can compute $k(x_1, x) \ldots k(x_n, x)$ instead of computing $\phi(x)$.
+
+\end{solution}
+
+\Part To get the correct projection coefficient in regular PCA, we always normalize eigenvectors $v$ so that $\inner{x}{v}$ gives the correct coefficient. How can we equivalently ensure proper normalization in our kernel PCA?
+
+\begin{solution}
+
+We have 
+
+\begin{align*}
+\inner{v}{v} = \inner{X^T \alpha}{X^T \alpha} = \alpha^T X X^T \alpha = \alpha^T (\lambda \alpha) = \lambda \inner{\alpha}{\alpha}.
+\end{align*}
+
+Thus, to ensure $\inner{v}{v} = 1$, we can scale $\alpha$ such that $\inner{\alpha}{\alpha} = \frac{1}{\lambda}$.
+
+\end{solution}
+
+\end{Parts}
+
+\newpage

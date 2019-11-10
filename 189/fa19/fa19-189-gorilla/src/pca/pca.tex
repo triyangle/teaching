@@ -1,0 +1,81 @@
+\Question{PCA}
+
+Let $X = \begin{bmatrix} x_1^T \\ \vdots \\ x_n^T \end{bmatrix}$ be our data matrix with the datapoints $x_i$ as the rows of the matrix. Assume for this problem that the data is centered, and thus the covariance matrix $\Sigma = \frac{1}{n} X^TX$.
+
+\begin{Parts}
+
+\Part
+Suppose you were given the unit eigenvectors $v_i$ and eigenvalues $\lambda_i$ of the covariance matrix. How would you perform PCA to find the best $k$ principal directions and principal coordinates?
+
+\begin{solution}
+	Take the $k$ eigenvectors with the largest eigenvalues. For datapoint $x$, the projected coefficients for $x$ are simply $x^Tv_i$ for all $1 \leq i \leq k$.
+\end{solution}
+
+\Part
+Suppose you were given the (compact) SVD of $X = U \Sigma V^T = \sum_{i=1}^n \sigma_i u_i v_i^T$. How would you perform PCA to find the best $k$ principal directions and the resulting projected data?
+
+\begin{solution}
+	Note that $X^TX = (U\Sigma V^T)^T(U\Sigma V^T) = V\Sigma^2V^T$. So, since we're looking for the $k$ eigenvectors corresponding to the largest $k$ eigenvalues of $X^TX$, we simply can take the $k$ right singular vectors $v_i$ corresponding to the $k$ largest singular values $\sigma_i$.
+
+	For our principal coordinates, note that if $X = U \Sigma V^T$, then $XV = U \Sigma$. Since $XV_{ij} = x_i^Tv_j$, our principal coordinates are simply $U\Sigma_k$ where $\Sigma = diag(\sigma_1 \ldots \sigma_k)$.
+\end{solution}
+
+\includegraphics[width=3in]{"src/problems/pca/max_variance"}
+
+\Part
+Another way to derive PCA involves finding the direction $w$ that maximizes the variance of the projected data onto $w$. Specifically, suppose we project $x_i$ onto $w$, which yields projection coefficient $P_{w}(x_i)$. We seek to find the $w$ such that we maximize $Var(P_{w}(x_1), \ldots, P_{w}(x_n))$.
+
+\begin{enumerate}
+\item[i.] Write the expression for the projection coefficient $P_{w}(x_i)$.
+
+\begin{solution}
+	The projection of $x_i$ onto $w$ is simply $\frac{x_i^Tw}{||w||_2^2} w = \frac{x_i^Tw}{||w||_2} \cdot \frac{w}{||w||_2}$. The coefficient is therefore just $\frac{x_i^Tw}{||w||_2}$
+\end{solution}
+
+\item[ii.] Find an expression for our objective $Var(P_{w}(x_1), \ldots, P_{w}(x_n))$ in terms of $X$ and $w$. Does this remind you of a certain expression?
+
+\begin{solution}
+	Note that the mean of the projected data $\frac{1}{n} \sum_{i=1}^n (P_{w}(x_i)) = \frac{1}{n} \sum_{i=1}^n \frac{x_i^Tw}{||w||_2}$ is $0$ since the data is centered.
+
+	Thus we have the following expression for this variance:
+
+	\begin{align*}
+	Var(P_{w}(x_1), \ldots, P_{w}(x_n)) &= \frac{1}{n} \sum_{i=1}^n (P_{w}(x_i) - \frac{1}{n} \sum_{j=1}^n (P_{w}(x_j)))^2 \\
+	&= \frac{1}{n} \sum_{i=1}^n (\frac{x_i^Tw}{||w||_2})^2 \\
+	&= \frac{1}{n} \frac{||Xw||_2^2}{||w||_2^2} \\
+	&= \frac{1}{n} \frac{w^TX^TXw}{||w||_2^2}
+	\end{align*}
+
+	This is indeed the rayleigh quotient.
+\end{solution}
+
+\item[iii.] What is $\max_{w} Var(P_{w}(x_1), \ldots, P_{w}(x_n))$? How does this relate to PCA?
+
+\begin{solution}
+	\begin{align*}
+	\max_{w} Var(P_{w}(x_1), \ldots, P_{w}(x_n)) &= \max_{w} \frac{w^TX^TXw}{||w||_2^2} \\
+	&= \max_{||w||_2 = 1} w^TX^TXw \\
+	&= \lambda_{max}(X^TX)
+	\end{align*}
+
+	Choosing $w$ to be the eigenvector $v_{max}$ corresponding to $\lambda_{max} (X^TX)$ yields us the maximum. As such, finding the direction $w$ with the maximum variance of the projected data is the same as finding the best principal direction for PCA.
+\end{solution}
+\end{enumerate}
+\iffalse
+\Part
+In CCA, our goal is to find vectors $\vec a$ and $\vec b$ such that we maximize the correlation between $\vec a^TX$ and $\vec b^T Y$. We will denote $\operatorname {cov} (X,X) = \Sigma_{XX}$, $\operatorname {cov} (Y,Y) = \Sigma_{YY}$, and our correlation is $$\rho = \frac{\vec a^T \Sigma_{XY}\vec b}{\sqrt{\vec a^T \Sigma_{XX} \vec a} \sqrt{\vec b^T \Sigma_{YY} \vec b}}$$
+Using the change of basis $\vec c = \Sigma_{XX}^{1/2}\vec a, \vec d = \Sigma_{YY}^{1/2} \vec b$, and the Cauchy Schwarz inequality, provide an upper bound for $\rho$ in terms of $\vec c$. What vectors $\vec d$ cause a tight inequality? What vectors $\vec c$ maximize the bound? Hint: The Cauchy Schwarz inequality states that for all vectors $u$,$v$: $|\langle u,v \rangle| \leq \|u\| \|v\|$.
+
+\begin{solution}
+	Plugging in the change of basis, we have that $\rho = \frac{\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2} \vec d}{\sqrt{\vec c^T \vec c} \sqrt{\vec d^T \vec d}}$. For Cauchy-Schwarz, let $u=\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2}$, and $v=d$. Then, we have the following result:
+
+	\begin{align*}
+	\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2}d & \leq (\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2}\Sigma_{YY}^{-1/2}\Sigma_{YX}\Sigma_{XX}^{-1/2}\vec c)^{1/2} (\vec d^T \vec d)^{1/2} \\
+	\rho & \leq \frac{(\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1}\Sigma_{YX}\Sigma_{XX}^{-1/2}\vec c)^{1/2}}{(\vec c^T \vec c)^{1/2}}
+	\end{align*}
+	This inequality is tight when $u$ and $v$ are collinear, from what we know about the Cauchy-Schwarz inequality. So, $d$ and $\vec c^T \Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2}$ are collinear.
+
+	Using what we know about Rayleigh quotients, it's clear that this is maximized then $\vec c$ is the eigenvector of the largest eigenvalue of the matrix $\Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1}\Sigma_{YX}\Sigma_{XX}^{-1/2}$.
+\end{solution}
+\fi
+\end{Parts}

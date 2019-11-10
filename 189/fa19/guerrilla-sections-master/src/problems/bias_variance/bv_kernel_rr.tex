@@ -1,0 +1,123 @@
+\Question{Estimating $x^2$ -- Bias and Variance}
+Professor Sahai is trying to estimate some function $f(x)$, $x\in \mathbb{R}$ from noisy points, but has forgotten all machine learning and data regression methods. He has asked you to help him.
+\newline\newline
+Let $f(x) = x^2$. Suppose we are trying to learn $f(x)$, but we're only allowed to make three noisy measurements $(x_1, Y_1), (x_2, Y_2), (x_3, Y_3)$, where for $i \in \{1, 2, 3 \}$:
+$$x_i = i$$
+$$Y_i = f(x_i) + Z_i $$
+$$Z_i \stackrel{\text{i.i.d.}}{\sim} N(0,1)$$
+
+\begin{Parts}
+\Part
+Suppose we are learning $f(x)$ from $(x_1, Y_1), (x_2, Y_2), (x_3, Y_3)$ using Kernel Ridge Regression. From the following options, what choice of kernel $K: (\mathbb{R}, \mathbb{R}) \rightarrow \mathbb{R}$ and regularization parameter $\lambda$ will minimize our regression model's $bias^2$? Also, find the combinations that maximizes $bias^2$, minimizes variance, and maximizes variance. Explain your answer briefly.
+
+$$K_0(a, b) = 1$$
+$$K_1(a, b) = (ab + 1)$$
+$$K_2(a, b) = (ab + 1)^2$$
+$$\lambda \in {1, 2, 3}$$
+
+\begin{solution}
+  $K_0$, $K_1$, and $K_2$ are the degree 0, 1, and 2 polynomial kernels. Since the degree of $K_2$ matches the degree of the underlying model, we should expect $K_2$ to learn a model that is closest in expectation to $x^2$. So among the three kernels, $K_2$ results in the lowest bias. $K_0$ results in the greatest bias because it is least expressive.
+
+More expressive kernels have greater variance. So among the three kernels, $K_0$ results in the lowest variance and $K_2$ results in the greatest variance.
+
+Regularization attempts to reduce the variance by restricting or simplifying the estimator. This simultaneously increases bias. The largest choice of regularization parameter, $\lambda=3$, corresponds to the strongest regularization and therefore results in the greatest bias and the lowest variance. $\lambda=1$ results in the lowest bias and the highest variance.
+
+To minimize $bias^2$, we should pick $\lambda=1$, and $K_2$.
+
+To maximize $bias^2$, we should pick $\lambda=3$ and $K_0$.
+
+To minimize variance, we should pick $\lambda=3$, and $K_0$.
+
+To maximize variance, we should pick $\lambda=1$ and $K_2$.
+\end{solution}
+
+\Part
+Let $\mathbb{P}_0$ be the set of all degree-zero polynomials. In terms of random variables $Y_1, Y_2, Y_3$, find
+$$ \hat{p}_0(x) = \underset{p \in \mathbb{P}_0}{\text{argmin}} \sum\limits_{i=1}^3
+\left ( p(x_i) - Y_i \right )^2$$
+
+\begin{solution}
+$$\hat{p}_0(x) = \frac{Y_1 + Y_2 + Y_3}{3}$$
+\end{solution}
+
+
+\Part
+Fix $t \in \mathbb{R}$. Suppose we tried to estimate $f(t)=t^2$ using $\hat{p}_0(t)$. \\
+What is the bias of $\hat{p}_0(t)$? What is the variance of $\hat{p}_0(t)$? Express your answers in terms of $t$. \\
+
+\begin{solution}
+$$\text{Bias} = \mathbb{E}[\hat{p}_0(t) - f(t)]$$
+$$ = \mathbb{E}[\frac{Y_1 + Y_2 + Y_3}{3} - t^2]$$
+$$ = \frac{1}{3}\mathbb{E}[Y_1 + Y_2 + Y_3] - t^2$$
+$$ = \frac{1}{3}(1^2 + 2^2 + 3^2) - t^2$$
+
+$$\text{Variance} = \text{Var}[\hat{p}_0(t)]$$
+$$ = \text{Var}[\frac{Y_1 + Y_2 + Y_3}{3}]$$
+$$ = \frac{1}{9} \left (  \text{Var}[Y_1] + \text{Var}[Y_2] + \text{Var}[Y_3] \right ) + 0$$
+$$ = \frac{1}{9} \left ( 1 + 1 + 1 \right ) = \frac{1}{3}$$
+\end{solution}
+
+
+\Part
+Let $\mathbb{P}_1$ be the set of all degree-one polynomials. In terms of random variables $Y_1, Y_2, Y_3$ find
+$$ \hat{p}_1(x) = \underset{p \in \mathbb{P}_1}{\text{argmin}} \sum\limits_{i=1}^3
+\left ( p(x_i) - Y_i \right )^2$$.
+
+\underline{Hint 1}: Recall that every degree-one polynomial $p$ can be expressed as $p(x) = \vec{w}^T \vec{x}$ where $\vec{x} = \begin{bmatrix} 1 \\ x \end{bmatrix}$ and $w \in \mathbb{R}^2$.
+
+\underline{Hint 2}: Let $A = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \\ 1 & x_3 \end{bmatrix}
+= \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}$.
+  Then $(A^T A)^{-1} A^T \vec{Y} =
+  \begin{bmatrix} \frac{4}{3}Y_1 + \frac{1}{3}Y_2 - \frac{2}{3}Y_3 \\
+    - \frac{1}{2}Y_1 + \frac{1}{2}Y_3
+  \end{bmatrix}$.
+
+
+\begin{solution}
+
+$$
+  \vec{w}^* = (A^T A)^{-1} A^T \vec{Y} =
+  \begin{bmatrix}
+      \frac{4}{3}Y_1 + \frac{1}{3}Y_2 - \frac{2}{3}Y_3 \\
+      - \frac{1}{2}Y_1 + \frac{1}{2}Y_3
+  \end{bmatrix}
+$$
+
+$$ \hat{p}_1(t) = (\vec{w}^*)^T \begin{bmatrix} 1 \\ t \end{bmatrix} =
+  (\frac{4}{3} - \frac{1}{2}t) Y_1 + \frac{1}{3} Y_2 + (-\frac{2}{3} + \frac{1}{2}t) Y_3 $$
+
+\end{solution}
+
+\Part
+Fix $t \in \mathbb{R}$. Suppose we tried to estimate $f(t)$ using $\hat{p}_1(t)$.
+
+What is the bias of $\hat{p}_1(t)$? What is the variance of $\hat{p}_1(t)$? Express your answers in terms of $t$.
+
+\begin{solution}
+$$ \text{Bias } = \mathbb{E} \left[ \hat{p}_1(t) - f(t) \right]$$
+$$ = \mathbb{E} \left[ \hat{p}_1(t) \right] - f(t) $$
+$$ = \mathbb{E} \left[ (\frac{4}{3} - \frac{1}{2}t) Y_1 + \frac{1}{3} Y_2 + (-\frac{2}{3} + \frac{1}{2}t) Y_3 -t^2 \right] $$
+$$ = (\frac{4}{3} - \frac{1}{2}t) \mathbb{E}[Y_1] + \frac{1}{3} \mathbb{E}[Y_2] + (-\frac{2}{3} + \frac{1}{2}t) \mathbb{E}[Y_3] -t^2 $$
+$$ = (\frac{4}{3} - \frac{1}{2}t) (1^2) + \frac{1}{3} (2^2) + (-\frac{2}{3} + \frac{1}{2}t) (3^2) -t^2 $$
+
+$$ \text{Variance } = \text{Var} \left[ \hat{p}_1(t) \right]$$
+$$ = \text{Var} \left[ (\frac{4}{3} - \frac{1}{2}t) Y_1 + \frac{1}{3} Y_2 + (-\frac{2}{3} + \frac{1}{2}t) Y_3 \right] $$
+$$ = (\frac{4}{3} - \frac{1}{2}t)^2 \text{Var}[Y_1] + (\frac{1}{3})^2 \text{Var}[Y_2] + (-\frac{2}{3} + \frac{1}{2}t)^2 \text{Var}[Y_3] $$
+$$ = (\frac{4}{3} - \frac{1}{2}t)^2 + (\frac{1}{3})^2 + (-\frac{2}{3} + \frac{1}{2}t)^2 $$
+$$ = \frac{1}{2}t^2 - 2t + \frac{4}{9} $$
+\end{solution}
+
+\Part
+Roughly describe how the bias and variance of $p_0(t)$ and $p_1(t)$ compare as $t$ varies.
+
+\begin{solution}
+  \newline
+  Bias: $p_0(t)$ and $p_1(t)$ both have bias with small magnitude when $t$ is near the sampled points. However, if we choose $t$ outside $[1, 3]$, we find that both models underestimate $f(t)$, leading to increasingly negative bias.
+
+  Variance: $p_0(t)$ has constant variance of $1/3$ for all $t$. $p_1(t)$ has variance that is minimized at $t=2$.
+  Since $\text{Var}[p_1(2)] = 4/9$, we find that $\forall t \in \mathbb{R} $:
+  $$\text{Var}[p_1(t)] > \text{Var}[p_0(t)] $$
+\end{solution}
+
+\end{Parts}
+\newpage

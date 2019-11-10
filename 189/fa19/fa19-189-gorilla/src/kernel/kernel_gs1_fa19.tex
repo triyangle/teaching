@@ -1,0 +1,59 @@
+\Question{Kernels}
+
+\begin{Parts}
+
+\Part
+What is the primary motivation for using the kernel trick in machine learning algorithms?
+
+\begin{solution}
+If we want to map sample points to a very high-dimensional (even infinite-dimensional) feature space, the kernel trick can save us from having to compute those features explicitly, thereby saving a lot of time.
+\end{solution}
+
+\Part
+Prove that for every matrix $X \in \mathbb{R}^{n \times d}$, the corresponding kernel matrix $K$ is positive semidefinite.
+
+\begin{solution} 
+For any vector $v \in \mathbb{R}^n$, 
+\begin{align}
+    v^T K v = v^T XX^T v = \lVert X^T v \rVert^2 \geq 0
+\end{align}
+so $K$ must be PSD.
+
+\end{solution}
+
+\Part
+Suppose that $\xi$ is a random variable. Suppose we define a function $k_{\phi}:X \times X \rightarrow \mathbb{R}$ where $X$ is a set as 
+\begin{align}
+    k_\phi(x,y) := \mathbb{E}_\xi [\phi(x,\xi)\phi(y,\xi)],
+\end{align}
+where $\phi(x, \epsilon)$ is some arbitrary function. Prove that this $k_\phi$ defines a valid kernel.
+
+
+\begin{solution}
+Let $x_1,...,x_n$ be a set of data points, and let $K$ denote the kernel matrix formed from these data points. Let $v$ be a vector in $\mathbb{R}^n$. Observe that:
+\begin{align}
+        v^T K v &= \sum\limits_{i, j} v_i v_j k_\phi(x_i, x_j) \\
+        &= \sum\limits_{i, j} v_i v_j \mathbb{E}_\xi[\phi(x_i,\xi)\phi(x_j,\xi)] \\
+        &= \mathbb{E}_\xi \left[ \sum\limits_{i, j} v_i v_j \phi(x_i,\xi)\phi(x_j,\xi) \right] \\
+        &= \mathbb{E}_\xi \left[ \sum\limits_{i} v_i \phi(x_i,\xi) \sum\limits_{j} v_j \phi(x_j,\xi) \right] \\
+        &= \mathbb{E}_\xi \left[ \left( \sum\limits_{i}  v_i \phi(x_i,\xi) \right)^2 \right] \geq 0
+\end{align}
+
+\end{solution}
+
+\Part 
+Now let $\xi$ denote a random integer. Use part (c) to show that the following $k$ is a kernel on the space of subsets of integers: for $A,B \subseteq \mathbb{N}$, define 
+\begin{align}
+    k(A,B)= \text{Pr}(\xi \in A \cap B).
+\end{align}
+
+\begin{solution}
+ Let $p(i) = P(\xi = i)$. Then,
+ \begin{align}
+     \text{Pr} (\xi \in A \cap B) &= \sum\limits_{i \in \mathbb{N}} \textbf{1}\{i\in A\}\textbf{1}\{i\in B\}p(i) \\
+     &= \mathbb{E}_\xi \left[ \textbf{1}\{\xi\in A\}\textbf{1}\{\xi\in B\} \right] 
+ \end{align}
+ and we can use part (c) with $\phi(X, \xi) = \textbf{1}\{\phi \in X\}$
+\end{solution}
+
+\end{Parts}

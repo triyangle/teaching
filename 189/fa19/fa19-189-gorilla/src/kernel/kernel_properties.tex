@@ -1,0 +1,115 @@
+% \DeclareMathOperator{\Tr}{Tr}
+\newcommand*{\inner}[2]{\langle #1,#2\rangle}
+
+\Question{Kernel Properties}
+
+In Discussion 4, we saw two conditions which are both necessary and sufficient for kernel validity, and then from those we derived the following two properties of kernels:
+
+\begin{enumerate}[i.]
+  
+\item Linear combination of 2 valid kernels are also valid kernels:\\
+$ k(\textbf{x}_1, \textbf{x}_2) = \alpha \cdot k_a(\textbf{x}_1, \textbf{x}_2) + \beta \cdot k_b(\textbf{x}_1, \textbf{x}_2) $, where $\alpha, \beta \geq 0$
+  
+\item Kernels have inner product representations:\\
+$ k(\textbf{x}_1, \textbf{x}_2) = f(\textbf{x}_1)f(\textbf{x}_2)k_a(\textbf{x}_1, \textbf{x}_2) $, where $ f : \mathbb{R}^{n} \rightarrow \mathbb{R} $
+
+\end{enumerate}
+
+You may find these two properties above useful for proving some of the questions below.
+In this problem, we will explore more properties of Kernels and apply them on different kernels, specifically the RBF-kernel.
+
+\begin{Parts}
+\Part Let $ k_1, k_2 $ be positive definite kernels on $ x\in\mathbb{R}^{n} $ and functions $ f $ and $ g $ be $ f : \mathbb{R}^{n} \rightarrow \mathbb{R} $, $ g : \mathbb{R}^{n} \rightarrow \mathbb{R}^{n} $. Prove that the following kernels  are valid kernels:
+
+\begin{enumerate}[i.]
+  
+\item $ k(\textbf{x}_1, \textbf{x}_2) = f(\textbf{x}_1)\cdot f(\textbf{x}_2) $
+  
+\item $ k(\textbf{x}_1, \textbf{x}_2) = k_1(g(\textbf{x}_1), g(\textbf{x}_2)) $
+
+\item $ k(\textbf{x}_1, \textbf{x}_2) = k_1(\textbf{x}_1, \textbf{x}_2)\cdot k_2(\textbf{x}_1, \textbf{x}_2)$
+
+\end{enumerate}
+
+\begin{solution}
+
+\begin{enumerate}[i.]
+  
+\item By definition, kernels are the inner products of the feature function $ \Phi(\textbf{x}) $, which maps raw data $\textbf{x} $ to many features. In the degenerate case, $ \Phi(\textbf{x}) = f(\textbf{x}) $, which means
+\begin{center}
+    $ k(\textbf{x}_1, \textbf{x}_2) = \langle \Phi(\textbf{x}_1), \Phi(\textbf{x}_2) \rangle = \langle f(\textbf{x}_1), f(\textbf{x}_2) \rangle = f(\textbf{x}_1)\cdot f(\textbf{x}_2) $
+\end{center}
+  
+\item Function $ g $ is a mapping from $ \mathbb{R}^{n} \rightarrow \mathbb{R}^{n} $, so all it does here is map the set of input vectors of $k_1$ to another set of vectors. Since $k_1$ is a valid kernel, applying $ k_1 $ on \textit{any} set of m vectors $ \textbf{x}_1, \textbf{x}_2, \textbf{x}_3, ... \textbf{x}_m \in \mathbb{R}^{n} $ will create a valid $m \times m$ PSD Kernel matrix with entries $ k_1(\textbf{x}_i, \textbf{x}_j) $.
+
+\item According to the inner product representation of kernels, we have:
+$$ k(\textbf{x}_1, \textbf{x}_2) = \langle \Phi(\textbf{x}_1), \Phi(\textbf{x}_2) \rangle = \sum_{i} \Phi_i(\textbf{x}_1)\Phi_i(\textbf{x}_2)  $$
+
+Therefore:
+\begin{align*}\begin{split}
+k(\textbf{x}_1, \textbf{x}_2) & = k_1(\textbf{x}_1, \textbf{x}_2)\cdot k_2(\textbf{x}_1, \textbf{x}_2) \\
+& = (\sum_{i} \Phi_{1,i}(\textbf{x}_1)\Phi_{1,i}(\textbf{x}_2))\cdot(\sum_{j} \Phi_{2,j}(\textbf{x}_1)\Phi_{2,j}(\textbf{x}_2)) \\
+& = \sum_i \sum_j \Phi_{1,i}(\textbf{x}_1)\Phi_{1,i}(\textbf{x}_2) \Phi_{2,j}(\textbf{x}_1)\Phi_{2,j}(\textbf{x}_2)\\
+& = \sum_i \sum_j \Phi_{1,i}(\textbf{x}_1)\Phi_{2,j}(\textbf{x}_1)\Phi_{1,i}(\textbf{x}_2) \Phi_{2,j}(\textbf{x}_2)
+\end{split}\end{align*}
+
+Now let, $ \Phi_k(\textbf{x}) =\Phi_{1,i}(\textbf{x}) \Phi_{2,j}(\textbf{x})$. This is still a valid feature function as we are multiplying two scalars. Plugging it in into the above equation, we get: 
+$$ k(\textbf{x}_1, \textbf{x}_2) = \sum_{i} \sum_j \Phi_{1,i}(\textbf{x}_1)\Phi_{2,j}(\textbf{x}_1)\Phi_{1,i}(\textbf{x}_2) \Phi_{2,j}(\textbf{x}_2) = \sum_{k} \Phi_{k}(\textbf{x}_1)\Phi_{k}(\textbf{x}_2)$$
+
+\end{enumerate}
+
+\end{solution}
+
+\Part Again let $ k_1 $ be a positive definite kernel. Let $ h $ be a polynomial with positive coefficients. Prove that $ k(\textbf{x}_1, \textbf{x}_2) = h(k_1(\textbf{x}_1, \textbf{x}_2)) $ is a valid kernel.
+
+\begin{solution}
+\begin{align*}\begin{split}
+ h(x) & = a_k x^{k} + a_{k-1}x^{k-1} + a_{k-2}x^{k-2} + ... + a_2 x^{2} + a_1 x + a_0 \\
+h(k_1(\textbf{x}_i, \textbf{x}_j)) & = a_k k_1(\textbf{x}_i, \textbf{x}_j)^{k} + a_{k-1}k_1(\textbf{x}_i, \textbf{x}_j)^{k-1} + ... +  a_1 k_1(\textbf{x}_i, \textbf{x}_j) + a_0 
+\end{split}\end{align*}
+
+Note that this polynomial above consists of linear combinations of kernels that are raised to the various degrees.
+
+From part(a)(iii), the property $ k(\textbf{x}_1, \textbf{x}_2) = k_1(\textbf{x}_1, \textbf{x}_2)\cdot k_1(\textbf{x}_1, \textbf{x}_2)$ can be applied $ i-1 $ times to obtain the $i^{th}$ power. (The proof follows from induction.) Therefore, any $ k_1(\textbf{x}_i, \textbf{x}_j)^i $ is a valid kernel.
+
+We also know from the above mentioned property $ k(\textbf{x}_1, \textbf{x}_2) = \alpha \cdot k_a(\textbf{x}_1, \textbf{x}_2) + \beta \cdot k_b(\textbf{x}_1, \textbf{x}_2) $ that linear combinations of kernels are valid kernels.
+
+Using both properties, any positive polynomial can be reconstructed and still remain a valid kernel.
+
+\end{solution}
+
+\Part Using previous parts and the properties of kernels provided above, prove that $ k(\textbf{x}_1, \textbf{x}_2) = e^{k(\textbf{x}_1, \textbf{x}_2)} $ is a valid kernel, given that $ k $ is a valid kernel.
+
+(Hint: recall the Taylor expansion $ e^ x = \sum_{i=0}^{\infty}\frac{x^i}{i!}$).
+
+\begin{solution}
+
+From the Taylor expansion, we have:
+$$ e^ x = \sum_{i=0}^{\infty}\frac{x^i}{i!}$$
+
+Plugging in the kernel function, it follows from part (b) that positive polynomials applied on kernels are valid kernels:
+$$ e^{k(\textbf{x}_1, \textbf{x}_2)} = \lim_{x\to\infty}k_i(\textbf{x}_1, \textbf{x}_2) $$ where $ k_i(\textbf{x}_1, \textbf{x}_2) = \frac{k(\textbf{x}_1, \textbf{x}_2)^i}{i!} $. 
+
+\end{solution}
+
+\Part Many Machine Learning algorithms, such as K-Means, SVM, and PCA, use the Radial Basis Kernel, or the RBF-Kernel. The RBF Kernel is $ k(\textbf{x}_1, \textbf{x}_2) = \exp(\frac{-\lVert \textbf{x}_1 - \textbf{x}_2 \rVert^{2}}{\sigma^{2}}) $. Prove that the RBF Kernel is a valid kernel.
+
+\begin{solution}
+
+Expanding the RBF Kernel yields:
+\begin{align*}\begin{split}
+ k(\textbf{x}_1, \textbf{x}_2) & = \exp(\frac{-\lVert \textbf{x}_1\rVert^{2}-\lVert \textbf{x}_2\rVert^{2}+2\textbf{x}_1^{T}\textbf{x}_2}{\sigma^{2}}) \\
+ & = \exp(\frac{-\lVert \textbf{x}_1\rVert^{2}}{\sigma^{2}})\exp(\frac{-\lVert \textbf{x}_2\rVert^{2}}{\sigma^{2}})\exp(\frac{2\textbf{x}_1^{T}\textbf{x}_2}{\sigma^{2}}) 
+\end{split}\end{align*}
+
+It follows from part (c) that $ \exp(\frac{2\textbf{x}_1^{T}\textbf{x}_2}{\sigma^{2}}) $ is a kernel, since $ \textbf{x}_1^{T}\textbf{x}_2 $ is a dot product. 
+At the same time, we apply the property mentioned above, $ k(\textbf{x}_1, \textbf{x}_2) = f(\textbf{x}_1)f(\textbf{x}_2)k_a(\textbf{x}_1, \textbf{x}_2) $, where $ f(\textbf{x})=  \exp(\frac{-\lVert \textbf{x}\rVert^{2}}{\sigma^{2}}) $.
+
+Through these two properties, the RBF is a valid kernel.
+
+\end{solution}
+
+
+\end{Parts}
+
+\newpage

@@ -1,0 +1,116 @@
+\Question{PCA and Kernel PCA}
+
+Let's say that you are given $n$ samples of $d$-dimensional real world data. That is you have $n$ vectors $x_i$ and we can represent them in an $n$ x $d$ design matrix $X$. For this problem we will assume that the data are centered: $\frac{1}{n}\sum{{x_i}}$ = $0$.
+
+\begin{Parts}
+
+\Part 
+We learned in class that the objective of PCA is to find some direction(s), $w$ that explain the most data. Another way to view this is by maximizing the variance between projected data points onto this direction $w$.
+\begin{center}
+    \includegraphics[width=3in]{"src/pca/varience_proj"}
+\end{center}
+In this image, for example, we wish to find a direction $w$, the linear line, that spreads the projected data points (points on the line) as much as possible.
+
+\begin{enumerate}
+    \item Consider a point $x_i$ what is its scalar projection onto $w$?
+    
+    \begin{solution}
+    \begin{equation*}
+        x_{i}^{\top} \frac{w}{||w||_2}
+    \end{equation*}
+\end{solution}
+    
+    \item How can we express the entire data set's $X$ scalar project onto $w$?
+    
+    \begin{solution}
+    \begin{equation*}
+        \frac{Xw}{||w||_2}
+    \end{equation*}
+\end{solution}
+    
+    \item Now we would like to spread these projected points as far as possible. What is the objective function we would like to maximize? Express your answer in the form $\frac{1}{n} v^{\top} S v$, where $S$ is a symmetric matrix and $v$ is a unit vector. \textit{Hint: Start with $Var = E[X - E[X]^2]$} 
+    
+    \begin{solution}
+    \begin{align*}
+        Var(\Tilde{x_1}, \Tilde{x_2}, ... \Tilde{x_n}) &= \frac{1}{n} \sum_{i = 1}^{n} \left(x_{i}^{\top} \frac{w}{||w||_2} - \frac{1}{n} \sum_{j}^{n} x_{j}^{\top} \frac{w}{||w||_2}\right)^2 \\
+	&= \frac{1}{n} \sum_{i = 1}^{n} \left(x_{i}^{\top} \frac{w}{||w||_2} - \left(\frac{w^{\top}}{\|w\|_2}\right) \frac{1}{n} \sum_{j = 1}^{n} x_{j}\right)^2 \\
+	&= \frac{1}{n} \sum_{i = 1}^{n} \left(x_{i}^{\top}\frac{w}{||w||_2}\right)^2 \\
+	&= \frac{1}{n} \frac{||Xw||_2^2}{||w||_2^2} \\
+	&= \frac{1}{n} \frac{w^{\top}X^{\top}Xw}{||w||_2^2}
+    \end{align*}
+    Letting $S = X^{\top}X$, and $v = \frac{w}{\|w\|_2}$, we obtain the desired form of the solution.
+\end{solution}
+    
+    \item The resulting expression from the previous part, $v^{\top} S v$, is called the \textit{Rayleigh quotient}. Consider having eigenvectors $v_1, \dots, v_d$ of $S$ with eigenvalues $\lambda_1 \leq \dots \leq \lambda_d$. Which eigenvector maximizes the \textit{Rayleigh quotient}? % Furthermore if we substitute $v = \frac{w}{||w||}$, we rediscover the first definition of PCA from lecture.
+    
+    \begin{solution}
+        We choose the eigenvector with the largest eigenvalue, $v_d$.
+\end{solution}
+    
+\end{enumerate}
+\Part Now let's say you wish to augment this data with a feature mapping $\phi:\mathbb{R}^d\xrightarrow{}\mathbb{R}^D$. A data point $x_i$ will be mapped to $\phi(x_i)$ and we will call our new $n$ x $D$ design matrix, $\Phi$. We wish to use PCA over this new augmented data. For this question assume that the data is also centered in this feature space.
+
+\begin{enumerate}
+    \item What is the covariance matrix of our new data? What are its dimensions? Why might this be a difficult for us, or even possibly infeasible? Consider the case when $D >> d$.
+    
+\begin{solution}
+        Cov = $\frac{1}{n}\Phi^T\Phi$ with dimension $D$ x $D$. Since $D$ can be very large the covariance matrix may be difficult too large to calculate or even impossible if we map to an infinite feature space.
+\end{solution}
+\end{enumerate}
+
+\item To reduce the computational complexity of this PCA, we choose to instead to kernelize PCA. That is rather than solving for $w$ as before, we will try to solve for the dual weights $\alpha$ such that $w = \sum_{i = 1}^{n} \phi(x_i)\alpha_i = \Phi^T\alpha$.
+\begin{enumerate}
+    \item Suppose we are given a kernel function $\kappa(x_i,x_j) = \phi(x_i) \cdot \phi(x_j)$, which we can compute quickly. What is our kernel matrix $K$ in terms of $\Phi$? 
+    
+\begin{solution}
+    \begin{equation*}
+        K = \Phi \Phi^T
+    \end{equation*}
+\end{solution}
+    
+    \item Let us call $S = \sum_i\phi(x_i)\phi(x_i)^T$, or the scaled by $n$ covariance matrix. Let $w$ be an eigenvector of $S$ with nonzero eigenvalue  $\lambda$, then in the original PCA our goal was to find the eigenvector $w$ of $S$ corresponding to the largest eigenvalue. By SVD we know that if $\lambda$ is a nonzero eigenvalue of $S$ then it must also be one of $K$. Let the corresponding eigenvector of $K$ be $\alpha_w$. Prove that $w = \Phi^T\alpha_w$.
+    
+\begin{solution}
+    \begin{align*}
+        Sw &=  \lambda{}w\\
+        \Phi^T\Phi{}w &=  \lambda{}w\\
+        \Phi\Phi^T\Phi w &= \Phi \lambda{} w \\
+        K\Phi w &= \lambda \Phi w 
+    \end{align*}
+    Let $b = \Phi w$, then we have $Kb = \lambda b$ and:    
+    \begin{align*}
+        Sw &= \Phi^T\Phi w = \Phi^T b = \lambda w \\
+        \longrightarrow{} w &= \frac{\Phi^T b}{\lambda} \\
+    \end{align*}
+    Setting $\alpha_w = b / \lambda$ gives us the claim.
+\end{solution}
+    
+\end{enumerate}
+\item Finally, now let's see how we can use the kernel
+\begin{enumerate}
+    \item We encounter a data a new data point $x$ and wish to project its feature representation $\phi(x)$ onto $\frac{w}{||w||}$ where $w = \Phi^T \alpha_w$ as above. Express the projection in terms of $\alpha_w, \lambda,$ and $\kappa_x = [\kappa(x_1, x), \kappa(x_2, x), ... \kappa(x_n, x)]^T$. 
+    
+    \begin{solution}
+    \begin{align*}
+        \frac{w^T\phi(x)}{||w||^2} = \frac{\alpha_{w}^T\Phi\phi(x)}{\alpha_{w}^T\Phi\Phi^T\alpha_w} =
+        \frac{\alpha_{w}^T\kappa_x}{\alpha_{w}^TK\alpha_w} =
+        \frac{\alpha_{w}^T\kappa_x}{\alpha_{w}^T\left(\lambda\alpha_w\right)} =
+        \frac{\alpha_{w}^T\kappa_x}{\lambda||\alpha_w||^2}
+    \end{align*}
+\end{solution}
+    
+    \item Show how the expression from part (a)(c) can be written in terms of $\alpha_w$ and $K$.
+    
+    \begin{solution}
+    \begin{align*}
+        \frac{1}{n} \frac{w^T\Phi^T\Phi{}w}{||w||} =
+        \frac{1}{n} \frac{\alpha_{w}^T\Phi\Phi^T\Phi\Phi^T\alpha_w}{\alpha_{w}^T\Phi\Phi^T\alpha_w} =
+        \frac{1}{n} \frac{\alpha_{w}^TKK\alpha_w}{\alpha_{w}^TK\alpha_w} =
+        \frac{1}{n} \frac{\alpha_{w}^TK^2\alpha_w}{\alpha_{w}^TK\alpha_w}
+    \end{align*}
+\end{solution}
+\end{enumerate}
+
+\end{Parts}
+
+

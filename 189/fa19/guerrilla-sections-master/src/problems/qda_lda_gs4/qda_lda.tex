@@ -1,0 +1,115 @@
+\Question{Anisotropic Quadratic Discriminant Student Analysis (AQDSA)}
+Assume that all university students studying machine learning can be defined by their tendency to overfit ($x_1$) and their affinity towards CS189 ($x_2$). Next, assume, for better or for worse, only Berkeley and Stanford students are the ones studying computer science, and there's an equal number of Berkeley and Stanford Students
+\begin{Parts}
+\Part Use Maximum Likelihood Estimate to determine the Gaussian that best fits a sub sample of Berkeley Students studying machine learning, e.g. $\{b_1, b_2,..., b_n\}$\\
+\textit{Hint: } Normal PDF of an anisotropic Gaussian
+\[
+P(x) = \frac{1}{(\sqrt{2\pi})^d\sqrt{|\Sigma|}} \text{exp}(-\frac{1}{2}(x - \mu)^{\top}\Sigma^{-1}(x- \mu))
+\]
+Where $|\Sigma|$ is the determinant of the covariance matrix
+
+\begin{solution}
+    To begin, we define the log likelihood function to be \[\ell(\hat{\mu},\hat{\Sigma};b_1, b_2,..., b_n)\] representing the log likelihood of observing $b_1, b_2,...,b_n$ under parameter values $\hat{\mu}$ and $\hat{\Sigma}$\\
+    First we must approximate $\mu$
+    \begin{align}
+        \begin{aligned}
+            \ell(\hat{\mu},\hat{\Sigma};b_1, b_2,..., b_n) &= \ln P(b_1) + \ln P(b_2) + ... + \ln P(b_n)\\
+            \ell(\hat{\mu},\hat{\Sigma};b_1, b_2,..., b_n) &= \sum_i^n (-\frac{1}{2}(x - \mu)^{\top}\Sigma^{-1}(x- \mu) - d\ln \sqrt{2 \pi} - \frac{1}{2}\ln |\Sigma|)\\
+        \end{aligned}
+    \end{align}
+    Note the following property: \[x^{\top}Ax = \sum^n_{i=1}\sum^n_{j=1}A_{ij} x_i x_j\]
+    Next we take the gradient with respect to $\mu$
+    \begin{align}
+        \begin{aligned}
+            \nabla_{\mu} \ell &= \sum^n_i \Sigma^{-1} (b_i - \mu) = 0\\
+            \hat{\mu} &= \frac{1}{n}\sum^n_i x_i
+        \end{aligned}
+    \end{align}
+
+    Next we must determine the covariance matrix. Before that let's go through some properties
+    \begin{align}
+        \begin{aligned}
+        \frac{\partial}{\partial \Sigma} (\ln |\Sigma|) &= \Sigma^{-1}
+        \end{aligned}
+    \end{align}
+    This can easily be shown. Because since we only have two features, the formula for inverse of $\Sigma$ is as follows:
+    \begin{align}
+        \begin{aligned}
+            \Sigma ^{-1} &= |\Sigma| \begin{bmatrix}
+            d & -c\\
+            -b & a
+            \end{bmatrix}\\
+            & = \frac{1}{ad-bc} \begin{bmatrix}
+            d & -c\\
+            -b & a
+            \end{bmatrix}\\
+        \end{aligned}
+    \end{align}Similarly
+    \begin{align}
+        \begin{aligned}
+            a^{\top}\Sigma^{-1}a &= \sum^n_{i=1}\sum^n_{j=1}\Sigma^{-1}_{ij} a_i a_j\\
+            \frac{\partial}{\partial \Sigma} (a^{\top}\Sigma^{-1}a) &= \sum^n_{i=1}\sum^n_{j=1}-(\Sigma^{-1}_{ij})^2 a_i a_j\\
+            &= -\Sigma^{-1}aa^{\top}\Sigma^{-1}
+        \end{aligned}
+    \end{align}
+    Finally to determine the covariance matrix
+    \begin{align}
+        \begin{aligned}
+            \ell(\hat{\mu},\hat{\Sigma};b_1, b_2,..., b_n) &= \sum_i^n (-\frac{1}{2}(x - \mu)^{\top}\Sigma^{-1}(x- \mu) - d\ln \sqrt{2 \pi} - \frac{1}{2}\ln |\Sigma|)\\
+            \frac{\partial \ell}{\partial \Sigma} &= \sum_i^n (\frac{1}{2}\Sigma^{-1}(x - \mu)(x- \mu)^{\top}\Sigma^{-1} - \frac{1}{2}\Sigma^{-1}) = 0\\
+            n\Sigma^{-1} &= \sum_i^n (\Sigma^{-1}(x - \mu)(x- \mu)^{\top}\Sigma^{-1})\\
+            n &= \sum_i^n ((x - \mu)(x- \mu)^{\top}\Sigma^{-1})\\
+            n\Sigma &= \sum_i^n ((x - \mu)(x- \mu)^{\top})\\
+            \Sigma &= \frac{1}{n}\sum_i^n ((x - \mu)(x- \mu)^{\top})\\
+        \end{aligned}
+    \end{align}
+\end{solution}
+
+\Part
+Next assume that \[\Sigma = \begin{bmatrix}
+3 & 2\\
+2 & 3
+\end{bmatrix}, \hat{\mu_B} = \begin{bmatrix}
+1\\
+1
+\end{bmatrix}\]
+What is the shape and location of Berkeley ML students' Gaussian?\\
+\textit{Hint:} No need to calculate exact lengths for shape, direction of axes and ratio are good enough
+
+\begin{solution}
+Eigenvectors should be \[v_1 = \begin{bmatrix}
+-1\\
+1
+\end{bmatrix}, v_2 = \begin{bmatrix}
+1\\
+1
+\end{bmatrix}\]
+With eigenvalues \[\lambda_1 = 1, \lambda_2 = 5\] Direction of the ellipses' axes are determined by the eigenvectors, and major axis is in the direction of $v_1$ and it is 5 times longer than the minor axis. Centered at $\begin{bmatrix} 1\\ 1\end{bmatrix}$
+\end{solution}
+
+\Part
+It turns out the Stanford ML students have the same covariance matrix as Berkeley students. Using this information, determine the Bayes decision boundary between Berkeley and Stanford ML students, given that $\hat{\mu_S} = \begin{bmatrix} 1\\ 3 \end{bmatrix}$\\
+    \textit{Hint:} $Q(x) = -\frac{1}{2}(x - \mu_C)^{\top}\Sigma^{-1}(x - \mu_c) - \frac{1}{2}\ln |\Sigma| + \ln \pi$\\
+    \textit{Hint 2:} It's ok to leave the answer in terms of the symbols
+
+\begin{solution}
+    Note that this is pretty much LDA. We get rid of the quadratic terms
+    \[
+    0 = Q_B(x) - Q_S(x) = (\mu_B - \mu_D)^{\top}\Sigma^{-1}x - \frac{\mu_B^{\top}\Sigma^{-1}\mu_B - \mu_S^{\top}\Sigma^{-1}\mu_S}{2}
+    \]
+\end{solution}
+
+\Part
+Conceptual: Suppose we are fitting a classifier based on n independent training observations with
+p = 10 predictors. If the number of observations n is very large, why do we expect
+QDA to have better predictive performance than LDA?\\
+\begin{solution}
+QDA is more flexible than LDA, because it assumes differenct covariance matrices for
+each class. QDA fits a quadratic decision boundary, whereas LDA fits a linear decision
+boundary, so QDA can get closer to the best decision boundary. For large n, we will
+not be overfitting, so the extra flexibility will improve model performance. We can also
+state this in terms of the bias variance tradeoff: QDA has lower bias and for large n
+the variance of both LDA and QDA will be very small.
+\end{solution}
+
+\end{Parts}

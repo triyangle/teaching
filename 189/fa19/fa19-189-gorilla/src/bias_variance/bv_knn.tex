@@ -1,0 +1,65 @@
+\Question{Bias/Variance for K-Nearest Neighbors Regression}
+
+Suppose we have $n$ training points $x_i$ with labels $y_i$. We want to model a regression problem with k-nearest neighbors regression. K-nearest neighbors works as follows: for a particular data point $z$, the k-nearest neighbors regression algorithm finds the closest $k$ points to $z$ in our $n$ training points and predicts the value label for $z$ by averaging the labels of the closest $k$ points. More formally, we model our hypothesis $h(z)$ as
+
+\begin{align*}
+h(z) = \frac{1}{k} \sum_{i=1}^n N(x_i, z, k)
+\end{align*}
+
+where the function $N$ is defined as
+
+\[
+N(x_i, z, k) = 
+\begin{cases} 
+      y_i & \text{if } x_i \text{ is one of the } k \text{ closest points to } z \\
+      0 & o.w. 
+   \end{cases}
+\]
+
+
+Suppose also we assume our labels $y_i = f(x_i) + \epsilon$, where $\epsilon$ is the noise that comes from $\mathcal{N}(0, \sigma^2)$ and $f$ is the true function. 
+
+\begin{Parts}
+\Part Derive the bias$^2$ of our model for given $x_i$, $y_i$ pairs. Remember that the bias is simply $(\mathbb{E}(h(z)) - f(z))^2$.
+
+\begin{solution}
+Let $x_1 \ldots x_k$ be the $k$ closest points. 
+
+
+\begin{align*}
+(\mathbb{E}(h(z)) - f(z))^2 &= (\mathbb{E}( \frac{1}{k} \sum_{i=1}^n N(x_i, z, k)) - f(z))^2 = (\mathbb{E}( \frac{1}{k} \sum_{i=1}^k y_i) - f(z))^2 \\
+&= (\frac{1}{k} \sum_{i=1}^k \mathbb{E}(y_i) - f(z))^2 = (\frac{1}{k} \sum_{i=1}^k \mathbb{E}(f(x_i) + \epsilon) - f(z))^2 \\
+&= (\frac{1}{k} \sum_{i=1}^k f(x_i) - f(z))^2
+\end{align*}
+
+\end{solution}
+
+\Part How well does $k$-nearest neighbors behave as $k \longrightarrow \infty$? How about when $k = 1$? Comment.
+
+\begin{solution}
+When $k \longrightarrow \infty$, then $\frac{1}{k} \sum_{i=1}^k f(x_i)$ goes to the average label for $x$. When $k = 1$, then the bias is simply $f(x_1) - f(z)$. Assuming $x_1$ is close enough to $f(z)$, the bias would likely be small when $k = 1$ since it's likely to share a similar label. Meanwhile, when $k \longrightarrow \infty$, the bias doesn't depend on the training points at all which like will restrict it to be higher.
+\end{solution}
+
+\Part Derive the variance of our model, which is defined as the $Var(h(z))$.
+
+\begin{solution}
+Let $x_1 \ldots x_k$ be the $k$ closest points. 
+
+\begin{align*}
+Var(h(z)) &= Var(\frac{1}{k} \sum_{i=1}^k y_i) = \frac{1}{k^2} \sum_{i=1}^k Var(f(x_i) + \epsilon) \\
+&= \frac{1}{k^2} \sum_{i=1}^k (Var(f(x_i)) + Var(\epsilon)) = \frac{1}{k^2} \sum_{i=1}^k (Var(\epsilon)) \\
+&= \frac{1}{k^2} \sum_{i=1}^k (\sigma^2) = \frac{1}{k^2} k \sigma^2 = \frac{\sigma^2}{k} 
+\end{align*}
+\end{solution}
+
+
+\Part What happens to the variance when $k \longrightarrow \infty$? How about when $k = 1$?
+
+\begin{solution}
+
+Variance goes to 0 when $k \longrightarrow \infty$, and is maximized at $k = 1$.
+\end{solution}
+
+\end{Parts}
+
+\newpage

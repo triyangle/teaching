@@ -1,0 +1,46 @@
+\Question {More MLE}
+\begin{Parts}
+
+\Part
+We have a training set ${(x_i, y_i): i = 1,...,N}, y_i \exists {1,2,...,k}$. We would like to use this data in order to classify each sample into a given class.  Given the following probability that a sample is of class k: $$p(y=k|x) = \frac{e^{(w_k^Tx)}}{\sum_i e^{(w_i^Tx)} } $$ how would you derive multi class logistic regression?\\
+ 
+\begin{solution}
+To write down the likelihood function, we will use the 1-of-K encoding scheme in which we create a target vector y for each example, if y = k, then the vector y will have 1 for the k-th element and zero for all other elements. The log likelihood function for the ith example is then:
+$$L_i(w_1, w_2,...,w_k) = argmax \ln \prod_{k=1}^{K} p(k|x_i)^{(y_i^k)}$$
+Here we have the probability that a point is in a given class k raised to the number of times that point fell in the given class. Now taking the argmax of a function is the same as minimizing the argmin thus we can rewrite this as the following:
+$$ = argmin_w - \sum_{k=1}^{K} y_i^k \ln p(k|x_i)$$
+Now we can substitute in the probability $p(y=k|x)$ to give the following result:
+$$L_i(w_1, w_2,...,w_k)  = argmin_w - \sum_{k=1}^{K} y_i^k \ln (\frac{e^{(w_k^Tx)}}{\sum_i e^{(w_i^Tx)}} )$$.
+
+Thus we have the loss function for multinomial logistic regression. We can see the similarities between this equation and the solution for binomial logistic regression.
+
+\end {solution}
+
+\Part
+Suppose $X_1, X_2, ..., X_n$ are i.i.d random variables with denisty function $f(x| \sigma) = \frac{1}{2 \sigma} exp (- \frac{|x|}{\sigma})$. Find the maximum likelihood estimate of $\sigma$. 
+
+\begin{solution}
+The log likelihood function will be 
+$$l(\sigma) = \sum_{i=1}^{n} [-\ln (2) - \ln \sigma - \frac{|X_i|}{\sigma}] $$
+In order to maximize this, first set the derivative with respect to $\theta$ to be zero
+$$l'(\sigma) = \sum_{i=1}^{n} [-\frac{1}{\sigma} + \frac{|X_i|}{\sigma^2}] = -\frac{n}{\sigma} + \frac{\sum_{i=1}^{n} |X_i|}{\sigma^2} = 0$$
+This gives us the MLE for $\sigma$ as 
+$$\sigma = \frac{\sum_{i=1}^{n} |X_i|} {n} $$
+\end{solution}
+
+\Part
+The Pareto distribution from economics models a density function with a decaying tail:
+$$f(x|x_0, \theta) = \theta x_0^\theta x^{-\theta-1}, x \geq x_0, \theta > 1 $$
+Assume that $x_0 > 0$ and that $X_1, X_2,...,X_n$ is an i.i.d sample. Find the MLE of $\theta$.
+
+\begin{solution}
+The log likelihood function is 
+$$l(\theta) = \sum_{i=1}^{n} \ln f(X_i|\theta) = \sum_{i=1}^{n}(\ln (\theta) + \theta \ln x_0 - (\theta + 1) \ln X_i) $$
+Let the derivative with respect to $\theta$ be zero:
+$$\frac{dl(\theta)}{d\theta} = \frac{n}{\theta} + n \ln x_0 - \sum_{i=1}^{n} \ln X_i = 0 $$
+Solving this equation yields MLE of $\theta$.
+$$\theta_{MLE} = \frac{1}{\ln X - \ln x_0} $$
+\end{solution}
+
+\end{Parts}
+

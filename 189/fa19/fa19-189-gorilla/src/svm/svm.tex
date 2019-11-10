@@ -1,0 +1,161 @@
+\Question{SVM}
+
+\begin{Parts}
+\Part In a soft margin SVM, if we increase $C$, which of the following are likely to happen? (Select all that apply)
+
+
+\begin{enumerate}
+\item The margin will grow wider.
+\item All slack variables will go to 0.
+\item The norm $||w||_2$ will grow larger.
+\item There will be more points inside of the margin.
+\end{enumerate}
+
+\begin{solution}
+C
+\end{solution}
+
+\Part If a hard margin svm tries to minimize $||w||_2^2$ subject to $y_i(w^T x_i + b) \geq c$ for some $c$, what will the width of the slab (the empty region) be? 
+
+\begin{enumerate}
+\item $\frac{2}{||w||_2^2}$
+\item $\frac{2c}{||w||_2^2}$
+\item $\frac{c}{||w||_2^2}$
+\item $\frac{2}{c||w||_2^2}$
+\end{enumerate}
+
+\begin{solution}
+B
+\end{solution}
+
+\Part The shortest distance from a point $z$ to a hyperplane $w^T x = 0$ is
+
+\begin{enumerate}
+\item $w^T z$
+\item $\frac{w^T z}{||w||_2}$
+\item $\frac{w^T z}{||w||_2^2}$
+\item $||w||_2 ||z||_2$
+\end{enumerate}
+
+\begin{solution}
+B
+\end{solution}
+
+\Part Which of the following is true about SVM's? (Select all that apply)
+
+\begin{enumerate}
+\item For soft margin SVM's, a solution exists if and only if the data is linearly separable.
+\item For hard margin SVM's, the support vectors are the only points needed to calculate the decision boundary.
+\item Both hard margin and soft margin SVM's can perfectly separate any training data in some feature space.
+\item Least squares SVM with $l2$-regularization has a closed form solution.
+\end{enumerate}
+
+\begin{solution}
+B, C, D
+\end{solution}
+
+\newpage
+\Part
+
+Let's take a look at a set of points and see what a hard margin SVM would determine as the hyperplane.
+
+\begin{enumerate}[i.] 
+
+\item Sketch and find $w$, $b$, for the hyperplane $H = \{w^Tx = b\}$ found by a hard margin SVM. What are the support vectors and margin width?
+
+\begin{tikzpicture}
+\begin{axis}[
+    axis lines=middle,
+    xmin=-5, xmax=5,
+    ymin=-5, ymax=5,
+    xtick={-5,-4,-3, -2,-1,0,1,2,3,4,5}, 
+    ytick={-5,-4,-3, -2,-1,0,1,2,3,4,5}
+]
+\addplot [only marks] table {
+1 1
+-1 2
+-3 5
+-2 1
+-2 4
+-4 2
+0 5
+-3 -3
+1 2
+3 3
+};
+\addplot [only marks, mark=o] table {
+3 -1
+4 -3
+5 1
+3 -4
+1 -5
+-1 -5
+};
+\end{axis}
+\end{tikzpicture}
+
+\begin{solution}
+
+\begin{tikzpicture}
+\begin{axis}[
+    axis lines=middle,
+    xmin=-5, xmax=5,
+    ymin=-5, ymax=5,
+    xtick={-5,-4,-3, -2,-1,0,1,2,3,4,5}, 
+    ytick={-5,-4,-3, -2,-1,0,1,2,3,4,5}
+]
+\addplot [only marks] table {
+1 1
+-1 2
+-3 5
+-2 1
+-2 4
+-4 2
+0 5
+-3 -3
+1 2
+3 3
+};
+\addplot [only marks, mark=o] table {
+3 -1
+4 -3
+5 1
+3 -4
+1 -5
+-1 -5
+};
+\addplot [domain=-10:10, samples=2, dashed] {1*x-2};
+\end{axis}
+\end{tikzpicture}
+
+By inspection, one can see that the line we are looking for is $x_2 = x_1 - 2$, which has a slope of $1$. Thus, we know $w = \begin{bmatrix} c \\ -c \end{bmatrix}$ for some constant $c$.
+
+We can also see that we have support vectors are $(-5, -1)$, $(-3, -3)$, $(1,1)$, $(3, -1)$, $(5,1)$, and $(3, 3)$, but we only need one from each side to find the hyperplane. Thus, since our constraints of $y_i(w^T x_i + b) \geq 1$ have equality for our support vectors:
+
+\begin{align*}
+3c - (-1)c + b &= -1\\
+1c - 1c + b &= 1
+\end{align*}
+
+Solving this system, we get that $b = 1$, $4c + b = -1$ which means $4c = -2$ or $c = -\frac{1}{2}$.
+
+Thus, our hyperplane $H = w^Tx + b$ has $w = \begin{bmatrix} -\frac{1}{2}  \\ \frac{1}{2} \end{bmatrix}$ and $b = 1$.
+
+The margin width is $\frac{2}{||w||_2}$, or $\frac{2}{\frac{1}{\sqrt{2}}} = 2\sqrt{2}$.
+
+\end{solution}
+
+\item How many points can I remove without affecting the resulting hyperplane? There are 10 closed points and 6 open points.
+
+\begin{solution}
+
+14. I can remove everything except for $(1,1)$, and $(3,-1)$. Note that while there are more support vectors, just keeping these two will yield the same hyperplane.
+
+\end{solution}
+
+
+\end{enumerate}
+
+\end{Parts}
+
+\newpage

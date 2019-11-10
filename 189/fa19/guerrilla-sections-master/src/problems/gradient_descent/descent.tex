@@ -1,0 +1,70 @@
+\Question{Descent}
+\begin{Parts}
+\Part Consider the setup of gradient descent: $x_{t+1} = x_t - \alpha \nabla f(x)$. Recall that for a function $f : \mathbb{R}^n \rightarrow \mathbb{R}$ that is convex and differentiable, and which is additionally L-smooth: \\
+    $f(y) \leq f(x) + \nabla f(x)^T(y-x) + \frac{L}{2} \|x-y\|_2^2$  for any $x, y$. \\ Then if we run gradient descent for $k$ iterations with a fixed step size $\alpha = 1/L$, it will yield a solution $f(x^{(k)})$
+    which satisfies:
+
+    $f(x^{(k)}) - f(x^*) \leq \frac{\| x^{(0)} - x^* \|_2^2} {2 \alpha k}$ \\
+
+    What is the convergence rate? Hint: how many iterations are required to obtain $f(x^{(k)}) - f(x^*) \leq \epsilon $? \\
+
+\begin{solution}
+     $\epsilon \geq \frac{\| x^{(0)} - x^* \|_2^2} {2 \alpha k}$ \\
+     Can be rewritten as: $k \geq  \frac{\| x^{(0)} - x^* \|_2^2} {2 \alpha} \cdot \frac{1}{\epsilon}$ \\
+     Since $\frac{\| x^{(0)} - x^* \|_2^2} {2 \alpha}$ is a constant term, this implies that $O(\frac{1}{\epsilon})$ iterations are required to converge. 
+     Ie, the convergence rate is $O(\frac{1}{\epsilon})$. 
+\end{solution}
+
+\Part Now, consider the case of strong convexity, that is: \\
+    $f(y) \geq f(x) + \nabla f(x)^T(y-x) + \frac{\mu}{2} \|x -y\|_2^2$   \\
+
+    How does assuming strong convexity impact the convergence rate? That is, how many iterations are required to obtain a value of x that is $\epsilon$ away from $x^*$ if we run gradient descent for k iterations with a constant stepsize $\alpha = \frac{1}{L}$?\\
+    Hint: For $x_{t+1}$, the norm squared error is bounded by: $\|x_{t+1}-x^*\|_2^2 \leq (1 - \frac{\mu}{L})\|x_{t} - x^* \|_2^2$
+
+\begin{solution}
+     By induction, after k iterations: \\
+     $\|x_{k}-x^*\|_2^2 \leq (1 - \frac{\mu}{L})^k\|x_{0} - x^* \|_2^2$ \\
+     To bound error $\|x_{k}-x^*\|_2^2 \leq \epsilon$: $\epsilon \leq (1 - \frac{\mu}{L})^k\|x_{0} - x^* \|_2^2$ \\
+     Take the log of both sides: $\log(\epsilon) \leq k \log(1 - \frac{\mu}{L}) + \log(\|x_{0} - x^* \|_2^2)$ \\
+     Which can be rewritten as: $k \geq \frac{1}{\log(1- \frac{\mu}{L})} \log(\frac{\epsilon}{\|x_{0} - x^* \|_2^2})$ \\
+     Which is equivalent to $k \geq \frac{-1}{\log(1- \frac{\mu}{L})} \log(\frac{\|x_{0} - x^* \|_2^2}{\epsilon})$ \\
+     Since $\log(1 - \frac{\mu}{L}) < 0$ and $\|x_{0} - x^* \|_2^2$ is a constant term:  
+     This implies that $O(\log(\frac{1}{\epsilon}))$ iterations are required. This is an improvement from the convex case for small $\epsilon$. \\
+
+
+     Proof that $\|x_{t+1}-x^*\|_2^2 \leq (1 - \frac{\mu}{L})\|x_{t} - x^* \|_2^2$: \\
+      $\|x_{t+1}-x^*\|_2^2 = \|x_{t} - \frac{1}{L} \nabla f(x_t) -x^*\|_2^2$ \\
+      =  $\|x_{t} - x^* \|_2^2 - \frac{2}{L} \nabla f(x_t)^T(x_t - x^*) + \frac{1}{L^2}  \|\nabla f(x_t) \|_2^2 $ \\
+      Plugging in  $\| \nabla f(x_t) \|_2^2 \leq 2L (f(x_t) - f(x^*))$: \\
+      $\|x_{t+1}-x^*\|_2^2 \leq  \|x_{t} - x^* \|_2^2 - \frac{2}{L} \nabla f(x_t)^T(x_t - x^*) + \frac{2}{L} (f(x_t) - f(x^*)) $ \\
+      Now, rewriting the definition of strong convexity as: \\
+      $\nabla f(x)^T(x-x^*) \geq f(x) - f(x^*) + \frac{\mu}{2} \|x-x^*\|_2^2$   \\
+      Substituting in for $\nabla f(x)^T(x-x^*) $ will give us: \\
+      $\|x_{t+1}-x^*\|_2^2 \leq  \|x_{t} - x^* \|_2^2 - \frac{2}{L} (f(x) - f(x^*) + \frac{\mu}{2} \|x-x^*\|_2^2) + \frac{2}{L} (f(x_t) - f(x^*)) \\ $
+      Grouping like terms: \\
+     $\|x_{k}-x^*\|_2^2  \leq  (1 - \frac{\mu}{L})\|x_{t} - x^* \|_2^2 - \frac{2}{L} (f(x) - f(x^*)) + \frac{2}{L} (f(x_t) - f(x^*)) \\ $
+     Which implies that $\|x_{t+1}-x^*\|_2^2 \leq (1 - \frac{\mu}{L})\|x_{t} - x^* \|_2^2$ \\ \\
+
+
+
+\end{solution}
+
+\Part
+     Above, we have seen how Gradient Descent works for certain functions. However,evaluating the gradient on all data points is expensive. This is one reason we use Stochastic Gradient Descent in practice. Specifically, recall that in SGD instead of using the full gradient, we use a noisy estimate of it. Specifically, we assume:
+         $$\tilde{g}(x) = \nabla(x) + \epsilon \sim N(0, \Sigma)$$
+     We will now explore the role of this noise.
+For concreteness let $f(w) = \frac{1}{2}||Xw - y||_2^2$ i.e. we are trying to optimize the OLS loss function using SGD.
+
+Recall that in pratice we usually choose $\eta$ to be small (Discuss with the people around you why we want this. One reason can be see by considering what happens to the norm of the gradient as we approach the optimal value). That being said, there are also reasons to want high learning rates. To see this, consider the extreme case of $\eta = 0$. Then, we have $w^1 = w^0 - 0 = w^0$ and thus we never advance from our initial case. Formally show a stonger version of this by proving a lower bound on $\eta$ if we want to make at least $l$ progress on the $k$th step i.e. we want $||w^{k+1} - w^k||_2^2 \geq l$ \\
+    HINT: If we prove an upper bound on $||w^{k+1} - w^k||_2^2$, we can then lower bound that upper bound with $l$. \\
+\begin{solution} 
+      First we use the definition of SGD:
+  $$w^{k+1} = w^k - \eta \tilde{g}(w^k) = w^k - \eta(\nabla(w^k) + \epsilon) = w^k - \eta(X^TXw^k - X^Ty + \epsilon)$$
+  $$w^k - w^{k+1} = \eta(X^TXw^k - X^Ty + \epsilon)$$
+  $$||w^k - w^{k+1}||_2^2 = \eta||X^TXw^k - X^Ty + \epsilon||_2^2$$
+  $$||w^{k+1} - w^||_2^2 \leq \eta(||X^TXw^k||_2^2 + ||X^Ty||_2^2 + ||\epsilon||_2^2)$$
+  By the Triangle Inequality. Since we want the norm of the progress made to be at least $l$, we also need:
+  $$\eta(||X^TXw^k||_2^2 + ||X^Ty||_2^2 + ||\epsilon||_2^2) \geq l$$
+  Now, note that while $\epsilon$ is zero-mean, the norm of $\epsilon$ is not. In fact, as you should prove to yourself, $E[||\epsilon||_2^2] = tr(\Sigma)$. Since the trace is positive (because the covariance matrix is assumed to be non-degenerate i.e. positive) we have that SGD always requires a larger learning rate than GD to make the same progress at each step. But, this is in conflict with the desire above for a small learning rate. Thus, we see the inherent conflict in SGD and why choosing a good step size is difficult.
+\end{solution}
+\end{Parts}

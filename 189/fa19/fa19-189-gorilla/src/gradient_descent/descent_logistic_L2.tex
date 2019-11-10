@@ -1,0 +1,68 @@
+\Question{Logistical Descent}
+
+We can generally break down an optimization problem into 3 parts, a hypothesis function $h(x) = z$, a loss function $L(z, x)$, and an objective function $J(h, L)$. Our goal is to minimize the objective function and often times we cannot directly find the parameters or weights $w$. We can however iteratively find them through gradient descent, and in convex cases we can find the global optimum.
+
+Consider the following:
+\begin{itemize}
+    \item $s(\gamma) = \frac{1}{1+e^{-\gamma}}$ the logistic function.
+    \item $h(x_i) = s(w^Tx_i)$ our hypothesis using logistic regression. Let $s_i = s(w^Tx_i)$.
+    \item $L(y_i, x_i) = - y_i\ln z - (1-y_i)\ln(1-z)$ the cross entropy loss function ($z$ is our hypothesis output)
+    \item $\frac{1}{2}\lambda||w||^2 + \frac{1}{n}\sum_nL$ the $L_2$ regularized objective function
+\end{itemize}
+
+\begin{Parts}
+\Part What is the complete objective function that we are trying to minimize?
+
+    \begin{solution}
+    \begin{equation*}
+            J = \frac{1}{2}\lambda||w||^2 -\sum_{i}^{n}(y_i\ln s(w^Tx_i) + (1-y_i) \ln(1 - s(w^Tx_i)))
+    \end{equation*}
+    \begin{equation*}
+            J = \frac{1}{2}\lambda||w||^2 -\sum_{i}^{n}(y_i\ln s_i + (1-y_i) \ln(1 - s_i))
+    \end{equation*}
+\end{solution}
+    
+\Part Now derive the gradient $\nabla_wJ$:
+
+    \begin{solution}
+    First note:
+    \begin{equation*}
+            s'(\gamma) = \frac{e^{-\gamma}}{(1+e^{-\gamma})^2} = s(\gamma)(1 - s(\gamma))
+    \end{equation*}
+    \begin{equation*}
+            \nabla_w s(w^Tx_i) = s(w^Tx_i)(1 - s(w^Tx_i))x_i
+    \end{equation*}
+    \begin{equation*}
+            \nabla_w s_i = s_i(1 - s_i)x_i
+    \end{equation*}
+    
+    Let $s_i = s(w^Tx_i)$ for simpler notation:
+    \begin{align*}
+            \nabla_w J &= \nabla_w (\frac{1}{2}\lambda||w||^2 -\sum_{i}^{n}(y_i\ln s(w^Tx_i) + (1-y_i) \ln(1 - s(w^Tx_i)))) \\
+            \nabla_w J &= \nabla_w (\frac{1}{2}\lambda||w||^2 -\sum_{i}^{n}(y_i\ln s_i + (1-y_i) \ln(1 - s_i))) \\
+            \nabla_w J &= 2 \frac{1}{2}\lambda w -\nabla_w \sum_{i}^{n}(y_i\ln s_i + (1-y_i) \ln(1 - s_i)) \\
+            \nabla_w J &= \lambda w - \sum_{i}^{n}(\frac{y_i}{s_i} \nabla_w s_i - \frac{1-y_i}{1-s_i} \nabla_w s_i)) \\
+            \nabla_w J &= \lambda w - \sum_{i}^{n}(\frac{y_i}{s_i} - \frac{1-y_i}{1-s_i}) \nabla_w s_i \\
+            \nabla_w J &= \lambda w - \sum_{i}^{n}(\frac{y_i}{s_i} - \frac{1-y_i}{1-s_i}) s_i(1 - s_i)x_i \\
+            \nabla_w J &= \lambda w - \sum_{i}^{n}(y_i - s_i)x_i
+    \end{align*}
+\end{solution}
+
+\Part What are the batch and stochastic weight updates:
+\begin{itemize}
+    \item Batch:
+    
+    \begin{solution}
+    \begin{equation*}
+        w \longleftarrow w + \epsilon (\lambda w - \sum_{i}^{n}(y_i - s_i)x_i)
+    \end{equation*}
+\end{solution}
+    \item Stochastic:
+    
+    \begin{solution}
+    \begin{equation*}
+        w \longleftarrow w + \epsilon (\lambda w - (y_i - s_i)x_i)
+    \end{equation*}
+\end{solution}
+\end{itemize}
+\end{Parts}

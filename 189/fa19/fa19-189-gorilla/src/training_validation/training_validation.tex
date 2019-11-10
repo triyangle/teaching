@@ -1,0 +1,43 @@
+\Question{Training and Validation Error}
+Suppose you have split your data into training and validation sets and have
+trained your model on the training set. You are now
+examining its training and validation errors. What could be going on in each of these cases below and what
+might we try to decrease the high errors?
+
+\begin{Parts}
+    \Part High training error, high validation error
+
+    \begin{solution}
+        The model is underfitting and is unable to capture the patterns in
+        either the training or validation set. We might try switching to a more
+        complex model with greater expressiveness to solve this.
+    \end{solution}
+
+    \Part High training error, low validation error
+
+    \begin{solution}
+        The way our data was split was unlucky for us, with a training set with
+        particularly "hard" cases to learn and a validation set with
+        particularly "easy" cases to predict. We might try gathering more data
+        as in part (a), or use k-fold cross validation or another
+        training/validation splitting method that gives all the data a chance
+        to be in both the validation and training sets.
+    \end{solution}
+
+    \Part Low training error, high validation error
+
+    \begin{solution}
+        The model is overfitting to the training data. We might try adding
+        regularization methods, using a simpler model, stopping the training
+        early, selecting only certain features to use in the model to reduce
+        the validation error.
+    \end{solution}
+
+    \Part Low training error, low validation error
+
+    \begin{solution}
+        The model is performing well and we are doing good! We might try coming
+        up with a new breakthrough state of the art model that captures
+        the patterns in the data even better.
+    \end{solution}
+\end{Parts}

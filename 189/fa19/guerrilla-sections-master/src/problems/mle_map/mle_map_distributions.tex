@@ -1,0 +1,125 @@
+\Question{MLE/MAP}
+
+\begin{Parts}
+\Part
+Consider a biased coin with probability of heads $p$. Suppose
+we flip the coin $n$ times to get samples $X_1, X_2, \dots, X_n$, which we know come from a Bernoulli distribution. Recall that this means for some $X_i$, the outcome will be heads with probability $p$ and tails with probability $1-p$. Define the likelihood function $\mathcal{L}(p; X_1,...,X_n)$ and compute the maximum likelihood estimate $\hat{p}$.
+
+\begin{solution}
+    Let $\alpha_H$ be the number of heads and $\alpha_T$ be the number of tails.
+    Remember that our goal with MLE is to find the model parameter $p$ that maximizes the probability of our samples.
+    \begin{align*}
+        \begin{aligned}
+            \hat{p}_{MLE} &= \arg \max_p \mathcal{L}(p; X_1,\dots,X_n) \\
+            &= \arg\max_p P(X_1,\dots,X_n|p) \\
+            &= \arg \max_p \prod_{i=1}^n \Pr(X_i|p) \\
+            &= \arg \max_p p^{\alpha_H} (1-p)^{\alpha_T}\\
+            &= \arg \max_p (\alpha_H \ln p + \alpha_T \ln(1-p))\\\\
+            \frac{\partial}{\partial p} (\alpha_H \ln p + \alpha_T \ln(1-p)) &= \frac{\alpha_H}{\hat{p}_{MLE}} - \frac{\alpha_T}{1-\hat{p}_{MLE}} = 0\\
+            \hat{p}_{MLE} &= \frac{\alpha_H}{\alpha_H + \alpha_T}
+        \end{aligned}
+    \end{align*}
+\end{solution}
+
+\iffalse
+\Part
+Using the same setup from part (a), suppose we now know that the parameter $p$ of the coin comes from a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. Define the likelihood function again and set the derivative of the log likelihood to zero.
+
+\begin{solution}
+\end{solution}
+\fi
+
+\Part
+    Suppose we had data points $x_1, x_2, \dots, x_n$ where $x_i \in \mathbb{N}$, which were drawn from a Borel distribution. A Borel distribution is discrete, takes parameter $\mu$, and has a PMF (probability mass function, a discrete version of a PDF) of $P(X)=\frac{e^{-\mu X}(\mu X)^{X-1}}{X!}$. Given these data points, find the most likely $\mu$ using MLE.
+
+\begin{solution}
+    Let $S=\sum x_i$.
+    \begin{align*}
+        \begin{aligned}
+            \hat{\mu}_{MLE} &= \arg \max_\mu \mathcal{L}(\mu; x_1, \dots, x_n) \\
+            &= \arg\max_\mu P(x_1, \dots, x_n|\mu) \\
+            &= \arg\max_\mu \prod_{i=1}^n \frac{e^{-\mu x_i}(\mu x_i)^{x_i-1}}{x_i!}\\
+            &= \arg\max_\mu \sum_{i=1}^n (-\mu x_i + (x_i - 1)\ln (\mu x_i)-\ln (x_i!))\\
+            &= \arg\min_\mu (S\mu-(S-n)\ln (\mu)+\text{constant})\\
+            &= \arg\min_\mu (S\mu-(S-n)\ln (\mu))\\\\
+            \frac{\partial}{\partial \mu}(S\mu-(S-n)\ln (\mu)) &= S+\frac{n-S}{\hat{\mu}_{MLE}} = 0 \\
+            \hat{\mu}_{MLE}&=\frac{S-n}{S}=1-\frac{n}{S}=1-\frac{1}{\mu_x}
+        \end{aligned}
+    \end{align*}
+    where $\mu_x$ is the average of our data points.
+\end{solution}
+
+% This segment was cut out because it was too hard.
+\iffalse
+\Part
+    Suppose we had a Poisson distribution as a prior for $\mu$, with parameter $\lambda$. Thus $\mu \in \mathbb{N}$ and $\mu \sim \frac{\lambda^\mu e^{-\lambda}}{\mu!}$. Calculate the MAP for $\mu$, taking into account that $\mu$ is discrete. What happens as the number of samples increases to infinity, with each sample $x_i > 1$? You may use Stirling's approximation, which is $ln(x!) \approx xln(x)-x$. If you wish, you may use an approximation for the Lambert W function, that is, the function $W$ such that $W(xe^x)=x$. The approximation is $W(x) \approx ln(x)-ln(ln(x))$, which is accurate to within an integer for $x>3$.
+
+\begin{solution}
+    \begin{align*}
+        \begin{aligned}
+            \arg\max_\mu \\arg\max_\mu P(\mu\,|\,x_1, x_2, ..., x_n) &= \\arg\max_\mu log(P(x_1, ..., x_n\,|\,\mu))+log(P(\mu))\\
+            &=\arg\min_\mu S\mu - (S-n)ln(\mu) + \mu ln(\lambda) - \lambda - ln(\mu!)\\
+            &\approx \arg\min_\mu (n-S)ln(\mu)+\mu(ln(\lambda)+S-1)-\mu ln(\mu)\\
+        \end{aligned}
+    \end{align*}
+    Again, taking the derivative with respect to $\mu$ and setting to zero gives:
+    \begin{align*}
+        \begin{aligned}
+            \frac{n-S}{\mu}+ln(\lambda)+S-1-ln(\mu)-\frac{\mu}{\mu} &=0\\
+            \frac{n-S}{\mu}-ln(\mu) &= ln(\lambda)-S+2\\
+            -\mu e^\frac{n-S}{\mu} &= e^{ln(\lambda)-S+2}\\
+            \frac{n-S}{\mu} &= W((S-n)\lambda e^{2-S})\\
+            \mu &\approx \frac{n-S}{ln(S-n)+ln(\lambda)+2-S-ln(ln(S-n)+ln(\lambda)+2-S)}
+        \end{aligned}
+    \end{align*}
+    Of course, you must constrain the right hand of the equation to the nearest integer. As the number of samples increases, the log terms become irrelevant. This approximation becomes equivalent to:
+    \begin{align*}
+        \begin{aligned}
+            \lim_{S,n\to \infty}\mu &\to \frac{n-S}{-S} = \frac{S-n}{S}=1-\frac{1}{\mu_x}
+        \end{aligned}
+    \end{align*}
+    as we got before in part (a).
+\end{solution}
+\fi
+
+\Part
+    Suppose we had data points $x_1, x_2, \dots, x_n$ where $x_i \in \mathbb{N}$, which were drawn from a Poisson distribution. A Poisson distribution is discrete, takes parameter $\lambda$, and has a PMF of $P(X=x)=\frac{\lambda^x e^{-\lambda}}{x!}$ where $\lambda > 0$ and $x$ is a non-negative integer.
+    Suppose we have an exponential distribution as a prior for $\lambda$, with parameter $\alpha$. Thus $P(\lambda) = \alpha e^{-\alpha \lambda}$. Compute the MLE and MAP for $\lambda$. What happens as $n \to \infty$?
+
+    Hint: you may assume that the negative of the MLE and MAP functions are convex and thus you can take the derivative to find minima.
+
+\begin{solution}
+    Taking the log likelihood for MLE yields:
+    \begin{align*}
+        \begin{aligned}
+            \ln(P(x_1, x_2, ..., x_n)) &= \sum_{i=1}^n \ln(P(x_i|\lambda))\\
+            &= \sum_{i=1}^n -\lambda+x_i \ln(\lambda) - \ln(x_i!)\\
+            &= -n\lambda + S \ln(\lambda) - \sum_{i=1}^n \ln(x_i!)
+        \end{aligned}
+    \end{align*}
+    where $S=\sum_{i=1}^n x_i$. Taking the derivative of the negative of this will get us the MLE.
+    \begin{align*}
+        \begin{aligned}
+            n-\frac{S}{\hat{\lambda}_{MLE}} &= 0\\
+            \hat{\lambda}_{MLE} &= \frac{S}{n}
+        \end{aligned}
+    \end{align*}
+    For MAP we will again calculate log likelihoods:
+    \begin{align*}
+        \begin{aligned}
+            \arg\max_\lambda P(\lambda\,|\,x_1, ..., x_n) &= \arg\max_\lambda \ln(P(x_1, ..., x_n\,|\,\lambda)P(\lambda))\\
+            &= \arg\max_\lambda (-n\lambda + S \ln(\lambda)-\text{constant}+\ln(\alpha)-\alpha\lambda)\\
+            &= \arg\max_\lambda ((-n+\alpha)\lambda + S \ln(\lambda))
+        \end{aligned}
+    \end{align*}
+    Taking derivatives of the negative of this will then give us the MAP estimate:
+    \begin{align*}
+        \begin{aligned}
+            n+\alpha &= \frac{S}{\hat{\lambda}_{MAP}}\\
+            \hat{\lambda}_{MAP} &= \frac{S}{n+\alpha}
+        \end{aligned}
+    \end{align*}
+    Comparing the two forms shows that as $n \to \infty$ the a priori guess becomes negligible, and MAP approaches MLE.
+\end{solution}
+
+\end{Parts}

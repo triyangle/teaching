@@ -1,0 +1,162 @@
+\Question{Univariate LASSO}
+In this problem, we will derive the closed form solution to the univariate LASSO problem:
+
+ \[
+     \min_{w} \frac{1}{2}\|wx - y\|^{2}_{2} + \lambda \|w\|_{1}
+.\]
+
+
+\begin{Parts}
+
+    \Part Considering the scenario with $w, x, y, \lambda \in \mathbb{R}$ and
+    $\lambda \geq 0$, rewrite the problem as the sum of two convex functions of
+    $w$. Note that $x^{2}$ and $|x|$ are both convex functions of $x$.
+
+\begin{solution}
+\[
+    \min_{w \in \mathbb{R}} \frac{1}{2} \left( wx - y \right)^{2} + \lambda |w|
+.\] 
+\end{solution}
+
+\Part Find the derivative of the objective function from part (a) with respect
+to $w$. Recall that
+\[
+    \frac{d}{dx} |x| = \begin{cases}
+        1, & \text{if } x > 0 \\
+        -1, & \text{if } x < 0 \\
+    \text{undefined}, & \text{if } x = 0 \end{cases}
+.\] 
+
+\begin{solution}
+    \begin{align*}
+         \frac{d}{d w} \left( \frac{1}{2} \left( wx - y \right)^{2} + \lambda
+         |w| \right) &= \left( wx - y \right)x + \begin{cases}
+             \lambda, & \text{if }  w > 0 \\
+             -\lambda, & \text{if } w < 0 \\
+             \text{undefined}, & \text{if } w = 0
+         \end{cases}
+         \\
+                               &= wx^{2} - xy + \begin{cases}
+             \lambda, & \text{if }  w > 0 \\
+             -\lambda, & \text{if } w < 0 \\
+             \text{undefined}, & \text{if } w = 0
+         \end{cases}
+     \end{align*}
+\end{solution}
+
+\Part Draw the graph of the derivative as a function of $w$ from part (b) for each of the cases
+below. Recall that $\lambda \geq 0$.
+\begin{enumerate}[i.]
+    \item $-xy + \lambda < 0$
+
+    \item $|-xy| \leq \lambda$
+
+    \item $-xy - \lambda > 0$
+\end{enumerate}
+
+\begin{solution}
+    \begin{enumerate}[i.]
+        \item Sample graph for $x^{2} = 1$, $-xy = -2$, $\lambda = 1$
+
+            %\pgfplotsset{compat=1.8}
+            \begin{tikzpicture}[]
+                \begin{axis}[
+                    axis x line=middle, axis y line=middle,
+                    ymin=-5, ymax=5, ytick={-5,...,5}, ylabel=$\frac{d}{dw}$,
+                    xmin=-5, xmax=5, xtick={-5,...,5}, xlabel=$w$,
+                    domain=-pi:pi,samples=101, % added
+                    ]
+
+                    \addplot [domain=-5:0,blue] {x - 2 - 1};
+                    \addplot [domain=0:5,blue] {x - 2 + 1};
+
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, -1) circle (2.0pt);
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, -3) circle (2.0pt);
+                \end{axis}
+            \end{tikzpicture} 
+
+        \item Sample graph for $x^{2} = 1$, $-xy = -1$, $\lambda = 2$
+
+            %\pgfplotsset{compat=1.8}
+            \begin{tikzpicture}[]
+                \begin{axis}[
+                    axis x line=middle, axis y line=middle,
+                    ymin=-5, ymax=5, ytick={-5,...,5}, ylabel=$\frac{d}{dw}$,
+                    xmin=-5, xmax=5, xtick={-5,...,5}, xlabel=$w$,
+                    domain=-pi:pi,samples=101, % added
+                    ]
+
+                    \addplot [domain=-5:0,blue] {x - 1 - 2};
+                    \addplot [domain=0:5,blue] {x - 1 + 2};
+
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, 1) circle (2.0pt);
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, -3) circle (2.0pt);
+                \end{axis}
+            \end{tikzpicture} 
+
+        \item Sample graph for $x^{2} = 1$, $-xy = 2$, $\lambda = 1$
+
+            %\pgfplotsset{compat=1.8}
+            \begin{tikzpicture}[]
+                \begin{axis}[
+                    axis x line=middle, axis y line=middle,
+                    ymin=-5, ymax=5, ytick={-5,...,5}, ylabel=$\frac{d}{dw}$,
+                    xmin=-5, xmax=5, xtick={-5,...,5}, xlabel=$w$,
+                    domain=-pi:pi,samples=101, % added
+                    ]
+
+                    \addplot [domain=-5:0,blue] {x + 2 - 1};
+                    \addplot [domain=0:5,blue] {x + 2 + 1};
+
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, 1) circle (2.0pt);
+                    \draw [draw=blue, fill=white, thick] (axis cs: 0, 3) circle (2.0pt);
+                \end{axis}
+            \end{tikzpicture} 
+    \end{enumerate}
+\end{solution}
+
+\Part From the graphs and cases in part (c), deduce the closed form solution to
+the univariate LASSO problem.
+
+\begin{solution}
+    In the case $-xy + \lambda < 0$, we can see from the graph in part (c)i.
+    that the objective function is decreasing up to the stationary point where the derivative
+    is 0. Moreover, this occurs in the linear part of the derivative where $w >
+    0$. Setting the derivative to $0$ and solving for $w$ in this case, we get that
+    \begin{align*}
+        wx^{2} - xy + \lambda &= 0 \\
+        w &= \frac{xy - \lambda}{x^{2}}
+    \end{align*}
+
+    In the case $|-xy| \leq \lambda$, the derivative never takes on the value
+    $0$, and instead the minimum must occur at the discontinuity $w = 0$ as the
+    objective function shifts from decreasing to increasing at that point.
+
+    In the case $-xy - \lambda > 0$, we see again that the function has a
+    stationary point for which the minimum value occurs since it is increasing
+    beyond that point. This occurs in the linear part of the derivative where
+    $w < 0$. Setting the derivative to $0$ and solving for $w$ in this case, we
+    get that
+    \begin{align*}
+        wx^{2} - xy - \lambda = 0 \\
+        w &= \frac{xy + \lambda}{x^{2}}
+    \end{align*}
+
+    Thus, the closed form solution to the univariate LASSO problem is:
+    \[
+        w = \begin{cases}
+            \frac{xy - \lambda}{x^{2}}, & \text{if } -xy + \lambda < 0 \\
+            0, & \text{if } |-xy| \leq \lambda \\
+            \frac{xy + \lambda}{x^{2}}, & \text{if } -xy - \lambda > 0
+        \end{cases}
+    .\] 
+
+    Note in particular that $\lambda$ acts as a threshold for whether $w = 0$
+    or not. In particular, we see that larger values of $\lambda$ relaxes the
+    condition for when $w = 0$, so that it is more conducive to setting $w =
+    0$. This is consistent with how LASSO regularization encourages sparse
+    solution weight vectors and how increasing $\lambda$ causes the minimizer
+    to tend toward sparser solutions.
+\end{solution}
+
+\end{Parts}

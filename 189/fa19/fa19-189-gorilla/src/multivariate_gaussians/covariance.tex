@@ -1,0 +1,46 @@
+\Question{Covariance Practice}
+
+\begin{Parts}
+
+\Part
+Recall the covariance of two random variables $X$ and $Y$ is defined as Cov$(X, Y) = \mathbb{E}[(X -
+\mathbb{E}[X])(Y - \mathbb{E}[Y])]$. For a multivariate random variable $Z$ (i.e. each index of $Z$ is a random
+variable), we define the covariance matrix $\Sigma$ such that $\Sigma_{i j} =$ Cov$(Z_i
+, Z_j)$. Concisely, $\Sigma =\mathbb{E}[(Z - \mu)(Z - \mu)]$. Prove that the covariance matrix is always PSD. \\ \\
+Hint: Use linearity of expectation. 
+
+\begin{solution}
+
+We will show that for a covariance matrix $C$, $x^T C x \geq 0$ for all $x \in \mathbb{R}^n$, thereby showing that it is positive semidefinite. Expanding $x^TCx$ using the given definition of a covariance matrix we obtain
+\begin{align*}
+x^TCx &= x^T \mathbb{E}[(Z - \mu)(Z - \mu)^T] x
+\end{align*}
+Because of the linearity of expectation we can move the $x^T$ and $x$ inside of the expectation
+\begin{align*}
+ \mathbb{E}[x^T(Z - \mu)(Z - \mu)^Tx] &= \mathbb{E}[x^T (Z - \mu)(Z - \mu)^Tx] \\
+ &= \mathbb{E}[ (x^T (Z - \mu))^2] \geq 0 
+\end{align*} 
+The expectation of a squared random variable must be nonnegative, showing that the covariance matrix is PSD. 
+
+\end{solution}
+
+\Part
+Let $X$ be a multivariate random variable (recall, this means it is a vector of random variables)
+with mean vector $\mu \in \mathbb{R}^n$ and covariance matrix $\Sigma \in \mathbb{R}^{n \times n}$. Let $\Sigma$ have one zero eigenvalue.
+Prove the space where $X$ takes values with non-zero probability (this space is called the
+support of $X$) has dimension $n - 1$. How could you construct a new $\tilde{X}$ so that no information
+is lost from the original distribution but the covariance matrix of $\tilde{X}$ has no zero eigenvalues?
+What would $\tilde{X}$ look like if $\Sigma$ has $m \leq n$ zero eigenvalues? \\ \\
+Hint: use the identity Var$\left(\sum\limits_{i=1}^n Y_i \right) = \sum\limits_{i=1}^n \sum\limits_{j=1}^n $Cov$(Y_i, Y_j)$.
+
+\begin{solution}
+There is one eigenvalue of 0, call it $\lambda_0$ and one corresponding eigenvector, call it $v_0$. This means that there is 0 variance of the data along the direction of $v_0$. This indicates that the data all lies on a hyperplane perpendicular to $v_0$.  \\ 
+
+The support does not vary along $v_0$ so we can span the space with the remaining $n - 1$ eigenvectors, meaning that it has dimension $n - 1$. \\ \\
+ $v_0^TX$ is a constant random variable, so its value is equal to its expectation, which is $v_0^T \mu$. This is the displacement of the hyperplane from the origin, so the equation of the hyperplane is $\sum\limits_{i = 1}^n v_{0i} X_i = v_0^T\mu$. \\ \\
+ As such, we can generally construct $\tilde X$ when there are $m$ zero eigenvalues by removing the $m$ entries of $X$ that correspond to the zero eigenvalues; that is, if $\lambda_i = 0$ then remove $X_i$. \\ \\
+ This does not lose any information because we preserve all of the variance, since there is 0 variance along the eigenvectors corresponding to the zero eigenvalues. 
+
+\end{solution}
+
+\end{Parts}

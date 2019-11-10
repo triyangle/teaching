@@ -1,0 +1,63 @@
+\Question{Frobenius Norm, Trace, SVD}
+The Frobenius norm of a matrix is defined as the square root of the sum of the absolute squares of its elements:
+$$ \| M \|_F = \sqrt{\sum_{i, j} \lvert m_{i, j} \rvert^2}$$
+In class we have used the following property to simplify our calculations of the Frobenius norm,
+$$ \| M \|_F = \sqrt{\Tr(M M^T)}$$
+
+\begin{Parts}
+
+\Part
+Prove that the above equation is true. \\
+\\
+\begin{solution}
+$$\| M \| _F^2 = \sum_{i, j} \lvert m_{i,j} \rvert^2 = \sum_{i=1}^n (MM^T)_{i, i}$$
+$$ \| M \|_F^2 = \Tr(MM^T) $$
+$$ \| M \|_F = \sqrt{\Tr(MM^T)} $$
+\end{solution}
+
+\Part
+Now show that the Frobenius norm of a square matrix is equal to the square root of the sum of the singular values:
+$$\|M\|_F = \sqrt{\sum_i \sigma_i^2}$$
+
+\begin{solution}
+\begin{align*}
+\| M \|_F^2 = \Tr(M^TM) &= \Tr((V\Sigma^T U^T) (U \Sigma V^T)) \\
+&= \Tr(V \Sigma^T \Sigma V^T) & UU^T = I \\
+&= \Tr(V \Sigma^2 V^T) & \Sigma \text{ is a diagonal matrix}\\
+&= \Tr(\Sigma^2 V^T V) &\text{by the cyclic property of trace} \\
+&= \Tr(\Sigma^2) & V^T V = I \\
+&= \sum_{i} \sigma_i^2
+\end{align*}
+\end{solution}
+
+\Part
+In HW 4 we used the Eckart-Young-Mirsky thereom to find the closest lower-rank approximation of a degenerate matrix in the Frobenius Norm. Show that the following is true:
+\\
+\\Given a matrix $ M \in R^{mxn} $ with singular values $\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_n$
+$$ \min_{\tilde{M_k}} \|M - \tilde{M_k} \|_F^2 = \sum_{i=k+1}^m \sigma_i^2 $$
+\\$Hint:$ First show that i) There is a rank k matrix $\tilde{M_k}$ such that 
+$$\| M-\tilde{M_k} \|_F^2 = \sum_{i=k+1}^n \sigma_i^2$$
+then show that ii) $\tilde{M_k}$ yields the minimal solution to the optimization problem.
+\\
+\\
+\begin{solution}
+
+Claim: i) There is a rank k matrix 
+$\tilde{M_k}$ such that $$\| M-\tilde{M_k} \|_F^2 = \sum_{i=k+1}^n \sigma_i^2$$
+Proof: i)
+$$\tilde{M_k} = \sum_{i=1}^k \sigma_i u_i v_i^T $$
+$$\|M-\tilde{M_k}\|_F^2 = \|\sum_{i=1}^m \sigma_i u_i v_i^T - \sum_{i=1}^k \sigma_i u_i v_i^T \|_F^2 = \|\sum_{i=k+1}^m \sigma_i u_i v_i^T\|_F^2 $$
+$$ = \sum_{i=k+1}^m \sigma_i^2$$
+
+Claim: ii) For any rank k matrix
+$\tilde{M_k}$ 
+$$\| M-\tilde{M_k} \|_F^2 \geq \sum_{i=k+1}^n \sigma_i^2$$
+Proof: ii) What we really want to show is the following:
+\\For any matrix B of rank at most k
+$$ \|A-A_k \|_F \leq \| A - B \|_F $$
+
+Let B minimize $\| A - B \|_F^2$ among all rank k or less matrices. Let V be the space spanned by the rows of B. V is at most rank k, since B is a rank k matrix. If B minimizes $\| A - B \|_F^2$, then it must be that each row of B is the projection of the corresponding row of A onto V. If this were not true, we could simply replace a row of B with the projection of the corresponding row of A onto V, lowering $ \| A - B \|_F^2$ while not changing V. Since each row of B is the projection of the corresponding row of A onto V, $\| A-B \|_F^2$ is the sum of squared distances of rows of A to V. Since $A_k$ minimized the sum of squared distance of rows fo A to any k-d subspace, it follows that $\| A-A_k \|_F \leq \|A - B \|_F$
+\end{solution}
+\end{Parts}
+
+\newpage

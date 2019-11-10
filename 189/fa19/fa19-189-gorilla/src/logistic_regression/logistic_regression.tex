@@ -1,0 +1,38 @@
+\Question{Logistic Regression}
+Consider the log-likelihood function for logistic regression
+\[\ell(\theta) = \sum^m_{i=1}y^{(i)}\ln h(x^{(i)}) + (1 - y^{(i)})\ln(1 - h(x^{(i)}))\]
+Find the Hessian $H$ of this function , and show that for every $z$, it holds true that
+\[z^{\top}Hz \leq 0\]
+(Hint: You might want to start by showing that $\sum_i\sum_j z_i x_i x_j z_j = (x^{\top}z)^2$)
+
+\begin{solution}
+Recall that we have $g'(z) = g(z)(1-g(z))$, and thus for $h(x) = g(\theta^{\top}x)$. We have $\frac{\partial h(x)}{\partial \theta_k} = h(x)(1 - h(x))x_k$.
+
+\[
+\begin{split}
+\frac{\partial l(\theta)}{\partial \theta_k} & = \sum^m_{i=1}(y^{(i)} - h(x^{(i)}))x_k^{(i)}\\
+H_{kl} & = \frac{\partial^2 l(\theta)}{\partial \theta_k \partial \theta_l}\\
+& = \sum^m_{i=1} - \frac{\partial h(x^{(i)})}{\partial \theta_l} x_k^{(i)}\\
+& = \sum^m_{i=1} - h(x^{(i)})(1 - h(x^{(i)}) )x_l^{(i)}x_k^{(i)}
+\end{split}\]
+
+So we have for the hessian matrix $H$ (using that for $X = xx^{\top}$ if and only if $X_{ij} = x_ix_j$):
+\[
+H = - \sum^m_{i=1} h(x^{(i)})(1 - h(x^{(i)}) )x^{(i)}x^{(i)\top}
+\]
+
+And to prove that $H$ is negative semi-definite, we show $z^{\top}Hz \leq 0$ for all $z$
+
+\[
+\begin{split}
+    z^{\top}Hz & = -z^{\top} (\sum^m_{i=1} h(x^{(i)}) (1 - h(x^{(i)}))x^{(i)}x^{(i)\top})z\\
+    & = -\sum^m_{i=1} h(x^{(i)}) (1 - h(x^{(i)}))z^{\top}x^{(i)}x^{(i)\top}z\\
+    & = -\sum^m_{i=1} h(x^{(i)}) (1 - h(x^{(i)}))(z^{\top}x^{(i)})^2\\
+    & \leq 0
+\end{split}
+\]
+
+with the last inequality holding, since $0 \leq h(x^{(i)}) \leq 1$, which implies $h(x^{(i)}(1 - h(x^{(i)})) \geq 0$, and $(z^{\top}x^{(i)})^2 \geq 0$
+\end{solution}
+
+\newpage

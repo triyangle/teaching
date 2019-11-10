@@ -1,0 +1,90 @@
+\newcommand*{\inner}[2]{\langle #1,#2\rangle}
+
+\Question{GLS and the Gauss-Markov Theorem}
+Suppose we are in the GLS setting where we have a model $Y=Xw+N$ where $N\sim \mathcal{N}(0,\Sigma)$ for some PSD covariance matrix $\Sigma$ (that is, the error terms could be correlated). Recall that the GLS estimate is $\hat{w}_{GLS}=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Y$ and coincides with the MLE when $N$ is Gaussian. In this problem we will show that the GLS estimator is a ``best linear unbiased estimator'' of $w$ in that it yields the lowest mean squared error $E(\|\hat{w}-w\|_2^2)$ out of all unbiased estimators $\hat{w}$ of $w$ that are linear in $y$.
+\begin{Parts}
+\Part Compute $E(\hat{w}_{GLS})$ and $Cov(\hat{w}_{GLS})$. What is the distribution of $\hat{w}$?\\
+\\
+\begin{solution}
+We compute
+\begin{align*}
+    E(\hat{w}_{GLS})&=E((X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Y)\\
+    &=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}E(Y)\\
+    &=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}E(Xw+N)\\
+    &=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Xw\quad\text{($N$ has mean 0)}\\
+    &=w
+\end{align*}
+Hence $\hat{w}_{GLS}$ is an unbiased estimator of $w$. For the covariance we calculate
+\begin{align*}
+    Cov(\hat{w}_{GLS})&=Cov((X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Y)\\
+    &=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Cov(Y)((X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1})^T\quad\text{($Cov(Ax)=ACov(x)A^T$)}\\
+    &=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1} \Sigma \Sigma^{-1}X(X^T\Sigma^{-1}X)^{-1}\\
+    &=(X^T\Sigma^{-1}X)^{-1}
+\end{align*}
+In the above derivation we used the fact that if $A$ is symmetric and invertible then $A^{-1}$ is symmetric (this follows from the identity $(A^{-1})^T=(A^T)^{-1}$). $\hat{w}_{GLS}$ is a linear transformation of a multivariate Gaussian, and thus is distributed multivariate Gaussian. The parameters for this distribution are the mean and covariance matrix, which must then be the values for $E(\hat{w}_{GLS})$ and $Cov(\hat{w}_{GLS})$ we calculated above. That is, $\hat{w}\sim \mathcal{N}(w, (X^T\Sigma^{-1}X)^{-1})$.
+\end{solution}
+\Part Show that $MSE(\hat{w})=E(\|w-\hat{w}\|_2^2)$ can be decomposed into the sum of the squared norm of the bias, $\|w-E(\hat{w})\|_2^2$, and the trace of the covariance matrix $\Tr(Cov(\hat{w}))$. Conclude that for unbiased estimators $\hat{w}$ of $w$, $MSE(\hat{w})=\Tr(Cov(\hat{w}))$.\\
+\\
+\begin{solution}
+We have
+\begin{align*}
+E(\|w-\hat{w}\|_2^2)&=E(\|w-E(\hat{w})+E(\hat{w})-\hat{w}\|_2^2)\\
+&=E(\|w-E(\hat{w})\|_2^2) + E(\|E(\hat{w})-\hat{w}\|_2^2)+2E(\inner{w-E(\hat{w})}{E(\hat{w})-\hat{w}})
+\end{align*}
+The first term is the expectation of a constant, so $E(\|w-E(\hat{w})\|_2^2)=\|w-E(\hat{w})\|_2^2$, which is the squared norm of the bias. The second term is 
+\begin{align*}
+E(\Tr(\|E(\hat{w})-\hat{w}\|_2^2))&=E(\Tr((\hat{w}-E(\hat{w}))^T(\hat{w}-E(\hat{w}))))\\
+&=E(\Tr((\hat{w}-E(\hat{w}))(\hat{w}-E(\hat{w}))^T))=\Tr(Cov(\hat{w}))
+\end{align*}
+since trace and expectation commute. We show the last term is equal to 0 by expanding as
+\begin{align*}
+2E(wE(\hat{w})-w\hat{w}-E(\hat{w})^2+E(\hat{w})\hat{w})&=2(wE(\hat{w})-wE(\hat{w})-E(\hat{w})^2+E(\hat{w})^2)=0
+\end{align*}
+Thus we have decomposed $MSE(\hat{w})=\|w-E(\hat{w})\|_2^2+\Tr(Cov(\hat{w}))$, hence for unbiased estimators the MSE is the trace of the covariance matrix.
+\end{solution}
+\Part In this part of the problem we will prove a version of the Gauss-Markov Theorem for GLS, which states that if $\hat{w}$ is an unbiased estimator of $w$ that is linear in $y$ (that is, $\hat{w}=Cy$ for some $C$), then $Cov(\hat{w})-Cov(\hat{w}_{GLS})$ is positive semi-definite.
+\begin{itemize}
+	\item[(a)] Set $M=(X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}$ so that $\hat{w}_{GLS}=MY$. If $\hat{w}=(M+D)Y$ where $D\neq 0$ (because if $D = 0$, $\hat{w} = \hat{w}_{GLS}$), show that a necessary and sufficient condition for $\hat{w}$ to be unbiased for every $w$ is the condition $DX=0$ (hint: take $E(\hat{w})$ and express it as $\beta$ plus another term).
+	\\
+	\\
+	\begin{solution}
+	We have 
+	\begin{align*}
+		E(\hat{w})&=E((M+D)Y)=E((M+D)(Xw+N))\\
+		&=E((M+D)Xw)\quad\text{($N$ has mean zero)}\\
+		&=E(MXw+DXw)=w+DXw
+	\end{align*}
+	The last line used the fact $E(MXw)=E((X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Xw)=w$. So $\hat{w}$ is unbiased for all choices of $w$ iff $DX=0$.
+	\end{solution}
+	\item[(b)] Show that $Cov(\hat{w}_{GLS})-Cov(\hat{w})$ is PSD for every such $\hat{w}$ satisfying the conditions for the Gauss-Markov Theorem (hint: take $Cov(\hat{w})$ and express it as $Cov(\hat{w}_{GLS})$ plus another term using the condition found in part (a) - then show that term is PSD).\\
+	\\
+	\begin{solution}
+	We have
+	\begin{align*}
+		Cov(\hat{w})&=Cov((M+D)Y)\\
+		&=(M+D)\Sigma (M+D)^T
+	\end{align*}
+	We have $M\Sigma M^T=Cov(\hat{w}_{GLS})$. We can compute
+	$$D\Sigma M^T = D\Sigma \Sigma^{-1}X(X^T\Sigma^{-1}X)^{-1}=DX(X^T\Sigma^{-1}X)=0$$ since $DX=0$ from part (a). From this we also know $M\Sigma D^T=(D\Sigma M^T)^T=0^T=0$. Thus we have the decomposition
+	$$Cov(\hat{w})=Cov(\hat{w}_{GLS})+D\Sigma D^T$$
+	%We now need to show $D\Sigma D^T$ is PSD. By taking the transpose, we note it is symmetric. Because $\Sigma$ is PSD, it has a PSD square root so that $$v^TD\Sigma D^Tv=v^TD\Sigma^{1/2}\Sigma^{1/2}D^Tv=(\Sigma^{1/2}D^Tv)^T(\Sigma^{1/2}D^Tv)=\|\Sigma^{1/2}D^Tv\|_2^2\geq 0$$
+	It is simple to show $D\Sigma D^T$ is PSD. For any $v$, $vD\Sigma D^Tv=(D^Tv)^T\Sigma (D^Tv)\geq 0$ because $\Sigma$ is PSD. Thus $Cov(\hat{w})-Cov(\hat{w}_{GLS})=D\Sigma D^T$ is PSD.
+	\end{solution}
+	\item[(c)] Does the Gauss-Markov theorem apply when the errors $N$ do not follow a normal distribution?\\
+	\\
+	\begin{solution}
+	Yes, in our proof we had no distributional assumptions on the error term other than that it has mean 0.
+	\end{solution}
+\end{itemize}
+\Part Conclude that the GLS estimator minimizes the MSE over all unbiased estimators that are linear in $y$. In particular, if the covariance matrix of the errors is not a multiple of the identity, GLS does at least as well as OLS.\\
+\\
+\begin{solution}
+From part 2, the MSE of an unbiased estimator $\hat{w}$ of $w$ is the trace of its covariance matrix, $\Tr(Cov(\hat{w}))$. We can compare the MSE of $\hat{w}$ with that of $\hat{w}_{GLS}$:
+\begin{align*}
+MSE(\hat{w})-MSE(\hat{w}_{GLS})&=\Tr(Cov(\hat{w}))-\Tr(Cov(\hat{w}_{GLS}))=\Tr(Cov(\hat{w})-Cov(\hat{w}_{GLS}))
+\end{align*}
+By the Gauss-Markov theorem $Cov(\hat{w})-Cov(\hat{w}_{GLS})$ is PSD, hence all its eigenvalues are non-negative so its trace is non-negative and so $MSE(\hat{w}_{GLS})\leq MSE(\hat{w})$.
+\end{solution}
+\end{Parts}
+
+\newpage

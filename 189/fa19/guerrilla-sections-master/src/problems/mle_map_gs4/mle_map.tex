@@ -1,0 +1,60 @@
+\Question{Maximum Likelihood Estimation for IP Packet Arrival Times}
+
+Suppose at time $0$, Alice has a set of $n$ distinct packets that she would like to send to Bob. Assuming that on average, all the packets will be sent by time $m$, we would like to maximize the likelihood that all the packets will be sent before the average sent time. We assume that the time at which each packet is sent comes from an exponential distribution with parameter $\lambda > 0$, whose probability density function is $f(x) = \lambda e^{-\lambda x}$ and whose distribution function is $F(x) = \int_{0}^{x} f(x) dx = 1 - e^{-\lambda x}$
+
+\begin{Parts}
+\Part
+Bob is on the other end of a connection, and he waits until he receives all $n$ packets from Alice. The arrival times for each of the packets are $t_1, t_2, ..., t_n$. Formulate the likelihood function $\mathcal{L}(\lambda; t_1, ..., t_n)$ for these arrival times. Then calculate the maximum likelihood estimate $\hat{\lambda}$ for the distribution's parameter
+
+\begin{solution}
+    \begin{align}
+    \begin{aligned}
+        \mathcal{L}(\lambda; t_1,...,t_n) &= \prod_{i=1}^n \lambda e^{-\lambda t_i} = \lambda^n e^{-\lambda \sum^{n}_{i=1} t_i}\\
+        \ln \mathcal{L} &= n \ln \lambda - \lambda \sum^n_{i = 1} t_i\\
+        \frac{\partial}{\partial \lambda}\ln \mathcal{\lambda} &= \frac{n}{\lambda} - \sum^n_{i=1} t_i = 0\\
+        \hat{\lambda} &= \frac{n}{\sum^n_{i=1} t_i}
+    \end{aligned}
+    \end{align}
+\end{solution}
+
+\Part
+Bob observes that by time $k$, only $r$ of the packets have arrived, where $0 \leq r \leq n$. The arrival time of the packets are $t_1, t_2, ..., t_r$.\\
+
+Formulate the likelihood function $\mathcal{L}(\lambda; n, r, t_1,..., t_r)$. Then find the maximum likelihood estimate $\hat{\lambda}$ for the distribution's parameter.\\
+
+\textit{Hint:} Remember that the mean of a exponential distribution is $\frac{1}{\lambda}$
+
+\begin{solution}
+    \begin{align}
+        \begin{aligned}
+            \mathcal{L}(\lambda; n, r, t_1,...,t_r) &\propto (\prod^r_{i=1}f(t_i))(1 - F(k))^{n-r}\\
+            &= (\prod^r_{i=1}\lambda e^{-\lambda t_i})(e^{-\lambda k})^{n-r}\\
+            &= \lambda^r e^{-\lambda \sum^r_{i=1} t_i} e^{-\lambda(n-r)k}\\
+            \ln \mathcal{L(\lambda)} &= r\ln \lambda - \lambda \sum^r_{i=1}t_i - \lambda(n-r)k + \text{constant}\\
+            \frac{\partial}{\partial \lambda} \ln \mathcal{L}(\lambda) &= \frac{r}{\lambda} - \sum^r_{i=1} t_i - (n-r)k = 0\\
+            \hat{\lambda} &= \frac{r}{\sum^r_{i=1} t_i + (n-r)k}
+        \end{aligned}
+    \end{align}
+\end{solution}
+
+\Part
+Next Bob finds out that $\lambda$ actually comes from a Gaussian distribution defined by $$g(\lambda| \mu, \sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}\text{exp}(-\frac{(x - \mu)^2}{2\sigma ^ 2})$$ Where $\mu$ is the average, and $\sigma^2$ is the variance. Given this information, is our approximation in part b still valid? Why/why not? If not, please recalculate the likelihood, and you may leave your answer in unsimplified form.
+
+\begin{solution}
+    Different because so far we have been performing MLE, which assumes a constant prior. However now we know that the prior is not constant, and is actually drawn from a distribution, which calls for MAP\\
+
+    \begin{align}
+        \begin{aligned}
+            \mathcal{L}(\lambda; n, r, t_1,...,t_r) &= P(\lambda, n, r, t_1,...,t_r)P(k)\\
+            &= (\prod^r_{i=1}f(t_i))(1 - F(k))^{n-r} \frac{1}{\sqrt{2 \pi \sigma^2}}\text{exp}(-\frac{(\lambda - \mu)^2}{2\sigma ^ 2})\\
+            &= (\prod^r_{i=1}\lambda e^{-\lambda t_i})(e^{-\lambda k})^{n-r}\frac{1}{\sqrt{2 \pi \sigma^2}}\text{exp}(-\frac{(\lambda - \mu)^2}{2\sigma ^ 2})\\
+            &= \lambda^r e^{-\lambda \sum^r_{i=1} t_i} e^{-\lambda(n-r)k} \frac{1}{\sqrt{2 \pi \sigma^2}}\text{exp}(-\frac{(\lambda - \mu)^2}{2\sigma ^ 2})\\
+            \ln \mathcal{L(\lambda)} &= r\ln \lambda - \lambda \sum^r_{i=1}t_i - \lambda(n-r)k - \frac{(\lambda - \mu)^2}{2\sigma ^ 2}+ \text{constant}\\
+            \frac{\partial}{\partial \lambda} \ln \mathcal{L}(\lambda) &= \frac{r}{\lambda} - \sum^r_{i=1} t_i - (n-r)k - \frac{\lambda + \mu}{\sigma^2}= 0\\
+        \end{aligned}
+    \end{align}
+
+\end{solution}
+
+
+\end{Parts}

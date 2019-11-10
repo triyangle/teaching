@@ -1,0 +1,95 @@
+\Question{MLE and MAP Review}
+In the notes we gave statistical justifications to Ordinary Least Squares and Ridge Regression through MLE and MAP, respectively. Here we will reproduce the same results as a review but starting from the multivariate normal distribution. That is, we will see how our assumptions about independence and distributivity simplify our probability calculations.
+
+Let $Y \in \mathbb R^n, \ X \in \mathbb R^{nxd}, \ \theta \in \mathbb R^d, \ Z \in \mathbb R^n$, and assume our hypothesis model takes the form,
+$$ Y = X\theta + Z $$
+where Z is a zero mean Gaussian random vector modeling noise, $Z \sim \mathcal N (0, \Sigma)$. Thus Y is a Gaussian random vector $Y \sim \mathcal N(X\theta, \Sigma)$.
+
+For each part of the problem start from the multivariate normal distribution,
+$$ P(Y|X, \theta) = \frac{1}{(\sqrt{2\pi})^n \sqrt{\det(\Sigma)}}  e^{\frac{-1}{2} (Y - X\theta)^\top \Sigma^{-1} (Y - X\theta)}$$
+
+Reminders of MLE and MAP. MLE finds the estimate of theta that maximizes the likelihood of the data, $$\hat \theta = \arg \max_\theta P(Y|X, \theta)$$ 
+MAP finds the estimate of theta that maximizes the probability of theta given the data. That is it maximizes the posterior probability of theta, $$\hat \theta = \arg \max_\theta P(\theta| Y, X) = \arg \max_\theta \frac{P(\theta, Y|X)}{P(Y|X)} = \arg \max_\theta P(\theta)P(Y| X, \theta)$$
+
+\begin{Parts}
+\Part
+Using MLE find theta in terms of an optimization problem (write your answer as a minimization of a norm). Your answer should contain $\Sigma^{\frac{-1}{2}}$.
+
+\begin{solution}
+    Starting from the multivariate normal distribution, 
+    $$\hat \theta = \arg \max_\theta P(Y|X, \theta) = \arg \max_\theta \frac{1}{(\sqrt{2\pi})^n \sqrt{\det(\Sigma)}}  e^{\frac{-1}{2} (Y - X\theta)^\top \Sigma^{-1} (Y - X\theta)}$$
+    $$ = \arg \max_\theta \ \log(\frac{1}{(\sqrt{2\pi})^n \sqrt{\det(\Sigma)}}) - \frac{1}{2}(Y - X\theta)^\top\Sigma^{-1}(Y-X\theta)$$
+    $$ = \arg \min_\theta (Y-X\theta)^\top\Sigma^{-1}(Y-X\theta)$$
+    $$ = \arg \min_\theta  (Y-X\theta)^\top\Sigma^{\frac{-1}{2}}\Sigma^{\frac{-1}{2}}(Y-X\theta) $$
+    $$ = \arg \min_\theta (\Sigma^{\frac{-1}{2}\top} (Y-X\theta))^\top(\Sigma^{\frac{-1}{2}} (Y-X\theta)) $$
+    $$ = \arg \min_\theta \|\Sigma^{\frac{-1}{2}} (Y-X\theta)\|^2_2 $$
+    
+    This justifies Generalized Least Squares algorithm.
+\end{solution}
+
+\Part
+Continuing from part (a), describe what multiplication by $\Sigma^{\frac{-1}{2}}$  accomplishes in terms of coordinate changes. Hint: $\Sigma^{\frac{-1}{2}}$ is symmetric thus use spectral theorem, $\Sigma^{\frac{-1}{2}} = Q\Lambda^{\frac{-1}{2}}Q^\top$, and substitute into your answer above.
+
+\begin{solution}
+    Continuing from above, 
+    $$ = \arg \min_\theta \| Q\Lambda^{\frac{-1}{2}}Q^\top (Y-X\theta) \|^2_2 $$
+    
+    Consider $ Q^\top X, \ Q^\top $ is an orthogonal matrix thus it is a rotational transformation matrix. That is $ Q^\top X $ rotates the data in X onto the eigenvectors of $\Sigma$. The new coordinate system are the eigenvectors. This decorrelates the features making them independent in the new coordinate system.
+    
+    Consider $ \Lambda^{\frac{-1}{2}} (Q^\top X) , \  \Lambda^{\frac{-1}{2}} $ is a diagonal matrix with diagonal entries, $\frac{1}{\sigma_i}$, greater than zero where $\sigma_i^2$ are the eigenvalues of $\Sigma$. Thus it can only stretch or shrink the data in the corresponding eigenvector directions. This is analogous to standardizing a univariate normal random variable by diving it by its standard deviation. The elements of the noise Z are now independent and identically distributed, $ Z_i \sim \mathcal N(0,1) $, in the eigenvector coordinate system.
+    
+    Consider $ Q(\Lambda^{\frac{-1}{2}} Q^\top X) $, again $Q \ $ is a rotational matrix and rotates the data back to the original coordinate system, it undoes the rotation of $Q^\top$. The $Z_i$ are still i.i.d.
+\end{solution}
+
+\Part
+Restarting from the multivariate normal, suppose the $Z_i \sim \mathcal N (0, \sigma_i^2)$'s are independent of one another (but not identically distributed). Think how this affects the covariance matrix, $\Sigma$. Using MLE find theta in terms of an optimization problem. Write your answer as a minimization of a sum first. Then let $\Omega = diag(\frac{1}{\sigma_1^2},\dots, \frac{1}{\sigma_n^2})$, a diagonal matrix where $\sigma^2_i$ are the eigenvalues of $\Sigma$, and write your answer as a minimization of a norm that includes $\Omega$. What algorithm does this justify?
+
+\begin{solution}
+    Since the $Z_i$ are now independent, $\Sigma$ is a diagonal matrix with the diagonal entries being its eigenvalues $\sigma^2_i$.
+    Starting from the multivariate normal, 
+    $$\hat \theta = \arg \max_\theta P(Y|X, \theta) = \arg \max_\theta \frac{1}{(\sqrt{2\pi})^n \sqrt{\det(\Sigma)}}  e^{\frac{-1}{2} (Y - X\theta)^\top \Sigma^{-1} (Y - X\theta)}$$
+    $$ = \arg \min_\theta (Y-X\theta)^\top\Sigma^{-1}(Y-X\theta)$$
+    $$ = \arg \min_\theta
+    \sum_{i=1}^{n} \frac{(Y_i - X_i^\top \theta)^2}{\sigma^2_i}
+    $$
+    $$ = \arg \min_\theta 
+    (Y-X\theta)^\top\Omega^{\frac{1}{2}}\Omega^{\frac{1}{2}}(Y-X\theta)
+    $$
+    $$ = \arg \min_\theta (\Omega^{\frac{1}{2}\top} (Y-X\theta))^\top(\Omega^{\frac{1}{2}} (Y-X\theta)) $$
+    $$ = \arg \min_\theta \|\Omega^{\frac{1}{2}} (Y-X\theta)\|^2_2 $$
+
+    where, in this case, $\Omega = \Sigma^{-1}$ thus $\Omega^{1/2} = \Sigma^{-1/2} $. This justifies Weighted Least Squares. Note: $X_i$ is the $i^{th}$ row of X.
+\end{solution}
+
+\Part
+Now assume the $Z_i \sim \mathcal N(0, \sigma^2)$ are independent and identically distributed. Think how this affects the covariance matrix $\Sigma$. Using MLE find theta in terms of an optimization problem and write your answer as a minimization of a norm. What algorithm does this justify?
+
+\begin{solution}
+    Since the $Z_i$ are i.i.d the covariance matrix $\Sigma$ is a diagonal matrix with one identical entry, $\sigma^2$. Starting with the multivariate distribution, 
+    $$\hat \theta = \arg \max_\theta P(Y|X, \theta) = \arg \max_\theta \frac{1}{(\sqrt{2\pi})^n \sqrt{\det(\Sigma)}}  e^{\frac{-1}{2} (Y - X\theta)^\top \Sigma^{-1} (Y - X\theta)}$$
+    $$ = \arg \min_\theta (Y-X\theta)^\top\Sigma^{-1}(Y-X\theta)$$
+    $$ = \arg \min_\theta
+    \sum_{i=1}^{n} \frac{(Y_i - X_i^\top \theta)^2}{\sigma^2}
+    $$
+    $$ = \arg \min_\theta 
+    \frac{1}{\sigma^2}(Y-X\theta)^\top(Y-X\theta)
+    $$
+    $$ = \arg \min_\theta \|Y-X\theta\|^2_2 $$
+\end{solution}
+
+\Part
+Continuing from part (d), the $Z_i \sim \mathcal N(0, \sigma^2)$ are i.i.d. and the priors $\theta_i \sim \mathcal N(0, \sigma^2_h)$ are also i.i.d. Using MAP find theta in terms of an optimization problem and write your answer as a minimization of two norms. What algorithm does this justify?
+
+\begin{solution}
+    $$\hat \theta = \arg \max_\theta P(\theta)P(Y| X, \theta) = \arg \max_\theta \ \log P(\theta) + \log P(Y| X, \theta) $$
+    $$ = \arg \max_\theta -\frac{1}{2} (Y - X\theta)^\top \Sigma^{-1} (Y - X\theta) - \frac{1}{2} \theta^\top \Sigma^{-1}_h\theta
+    $$
+    $$ = \arg \min_\theta 
+    \sum_{i=1}^{n} \frac{(Y_i - X_i^\top \theta)^2}{\sigma^2} + \sum_{j=1}^{d} \frac{\theta_j^2}{\sigma^2_h}
+    $$
+    $$ = \arg \min_\theta \|Y-X\theta\|^2_2 + \frac{\sigma^2}{\sigma^2_h}\|\theta\| $$
+    
+    This justifies the Ridge Regression algorithm.
+\end{solution}
+
+\end{Parts}

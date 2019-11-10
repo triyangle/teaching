@@ -1,0 +1,128 @@
+\Question{Least Squares}
+\begin{Parts}
+
+\Part Consider the weighted least squares problem where $x_i \in \mathbb{R}^m$, $y \in \mathbb{R}^n$:
+\begin{center}
+$\sum_{i=1}^{n}{c_i (w^Tx_i - y_i)^2} : c_i \geq 0$  \\
+\end{center}
+
+Show that this problem can be written in matrix form where C is a diagonal matrix. What are X and y? What is C?
+
+\begin{solution}
+\indent Create a diagonal matrix C where $C_{ii}$ is equal to weight $c_i$. We can see \indent that this problem is equivalent to the sum of the squared components of \indent vector (Xw - y) scaled by the weights $c_i$. In matrix form, this can be written \indent as $(Xw - y)^TC(Xw - y)$ where y is a vector with components $y_i$ and X is a matrix where $x_i$ is row i of X.
+\end{solution}
+
+\Part Now consider adding a normalizing constraint:
+
+\begin{center}
+\indent $(Xw - y)^{T}C(Xw - y)  + \lambda \|w\|_2^2$ \\
+\end{center}
+Show that this problem is equivalent to:
+\begin{center}
+$\| \hat{X}w - \hat{y} \|_2^2$  \\
+\end{center}
+How would you form $\hat{X}$ and $\hat{y}$? \\
+Hint: What properties of C can be used to simplify this problem?
+
+\begin{solution}
+Since $C$ is a diagonal matrix with positive values on the diagonal,the matrix has a square root. The square root, $C^{1/2} = \texttt{diag}(\sqrt{c})$. We can therefore write $(Xw - y)^{T}C(Xw - y)$ as $(Xw - y)^{T}C^{1/2}C^{1/2}(Xw - y)$ which is equivalent to $\|\hat{X}w - \hat{y}\|_2^2$ where $\hat{X} = C^{1/2}X$ and $\hat{y} = C^{1/2}y$. Further, for the norm of a vector with the vector components x and y:
+$\big\Vert \begin{bmatrix} x \\ y \end{bmatrix} \big\Vert_2^2 = \|x\|_2^2 + \|y\|_2^2 $ \\
+Therefore, we can write:
+$\|\hat{X}w - \hat{y}\|_2^2 + \lambda \|w\|_2^2$
+as $\big\Vert \begin{bmatrix} \hat{X}w - \hat{y} \\ \sqrt{\lambda} w \end{bmatrix} \big\Vert_2^2$ which is equivalent to: \\
+$\|\hat{X}w - \hat{y}\|_2^2$ where $\hat{X} = \begin{bmatrix} C^{1/2}X \\ \sqrt{\lambda }I_m \end{bmatrix}$ and $\hat{y} = \begin{bmatrix} C^{1/2}y \\ 0 \end{bmatrix}$
+\end{solution}
+
+\Part In homework, we saw how we can think of Ridge Regression as a constrained version of Ordinary Least Squares. To review we can rewrite:
+\begin{center}
+ $\min \|Xw - y\|_2^2$
+ \\
+ s.t. $\|w\|_2^2 \leq \beta^2$
+ \\
+\end{center}
+As
+\begin{center}
+    $\min \|Xw - y\|_2^2 + \lambda \|w\|_2^2$\\
+\end{center}
+Where $\lambda$ is a parameter denoting the "price" we pay for violating the constraint.\\
+Now, we will consider a similar constrained optimization problem:
+\begin{center}
+    $\min \|Xw -y\|_2^2$\\
+    s.t. $\|w - v\|_2^2 \leq \beta^2$\\
+\end{center}
+What does this problem represent in terms of prior belief (informally is fine). Solve the problem, and explain why the solution makes sense.\\
+Hint: There is a long way and an elegant way of solving this\\
+Hint: The elegant way does not require taking a derivative
+
+\begin{solution}
+ We first observe that this methods generalizes Ridge Regression. That is, if $v=0$, we recover Ridge and thus we see that the belief this encodes is that the solution $w$ should be close to some $v$, just like Ridge should be close to 0.\\
+ Now, inspired by this, we can try and reduce this problem to standard Ridge Regression by making the change of variables: $w' = w - v$ to get:
+ \begin{center}
+     $\min \|X(w' + v) - y\|_2^2$\\
+     s.t. $\|w'\|_2^2 \leq \beta^2$\\
+ \end{center}
+ Which is equivalent to:
+ \begin{center}
+     $\min \|Xw' - (y - Xv)\|_2^2$\\
+     s.t. $\|w'\|_2^2 \leq \beta^2$\\
+ \end{center}
+ Or letting $y' = y - Xv$
+ \begin{center}
+     $\min \|Xw' - y'\|_2^2$\\
+     s.t. $\|w'\|_2^2 \leq \beta^2$\\
+ \end{center}
+ Which is percisely Ridge Regression except we have shifted $y$ by a linear combination of our data matrix, effectively recentering our regression. From the homework, we see that this problem has solution:
+ $$w' = (X^TX + \lambda I)^{-1}X^Ty'$$
+ And then making the appropriate substitutions:
+  $$w - v = (X^TX + \lambda I)^{-1}X^T(y - Xv)$$
+Or
+  $$w = (X^TX + \lambda I)^{-1}X^T(y - Xv) + v$$
+  A solution which is in line with the interpretation we had above since we are shifiting the centered solution to the correct region by adding $v$ to it.
+ % Next, like we did in Ridge, we can write:
+ %    $$\min \|Xw -y\|_2^2 + \lambda \|w - v\|_2^2$$
+% Then, as always when the function we are interested in is convex, we find the derivative and set it equal to zero. First we observe that we can rewrite the above as:
+% \begin{align*}\begin{split}
+%     & (Xw - y)^T(Xw - y) + \lambda(w - v)^T(w - v) \\
+%     & =((Xw)^T - y^T)(Xw - y) + \lambda(w^T - v^T)(w - v)\\
+%     & = (w^TX^T - y^T)(Xw - y) + \lambda(w^T - v^T)(w - v)\\
+%     & = w^TX^TXw - y^TXw - w^TX^Ty + y^Ty + \lambda(w^Tw - v^Tw - vw^T + v^Tv)\\
+%     & = w^TX^TXw - 2w^TX^Ty + y^Ty + \lambda(w^Tw - 2w^Tv + v^Tv)
+% \end{split}\end{align*}
+%
+% And then, we find the derivative with respect to w and set it to zero:
+% \begin{align*}\begin{split}
+%     X^TXw - 2X^Ty + \lambda(2w - 2v) &= 0\\
+%     2X^TXw + 2\lambda w &= 2X^Ty + 2\lambda v\\
+%     (X^TX + \lambda I)w &= X^Ty + \lambda v
+%     \end{split}\end{align*}
+
+% And thus we see that this shifted prior is reflected in shifting $X^Ty$.
+% Now however, observe that if we require $v$ to be in the span of the rows of $X$ i.e. the columns of $X^T$, as will happen if $X$ has full rank like it did with polynomial features in homework 2 if the sampling points were distinct, then, we get:
+% \begin{align*}\begin{split}
+% (X^TX + \lambda I)w &= X^Ty + \lambda X^T\alpha\\
+% (X^TX + \lambda I)w &= X^T(y + \lambda \alpha)
+% \end{split}\end{align*}
+
+% That is, we have just shifted $y$ to a new area and then performed Ridge Regression, showing how this really is just a generalized Ridge Regression but with a prior not centered at zero.
+\end{solution}
+
+\Part Regarding kernelized ridge regression, Note 7 makes the claim that:
+$$w^* = \Phi^\top (\Phi \Phi^\top + \lambda I)^{-1}y = (\Phi^\top \Phi + \lambda I)^{-1} \Phi^\top y$$
+(and that we prefer to use the more efficient approach depending on the number of samples we have vs. the degree $p$ of the polynomial features we wish to use.)
+
+Prove this claim for $\lambda \neq 0$.
+
+\begin{solution}
+$$w^* = \Phi^\top (\Phi \Phi^\top + \lambda I)^{-1}y = (\Phi^\top \Phi + \lambda I)^{-1} \Phi^\top y$$
+
+Substituting back in, we note that expressions inside the inside the parentheses below before inversion have the same non-zero eigenvalues:
+\begin{align*}\begin{split}
+\Phi^\top (\Phi \Phi^\top + \lambda I)^{-1}y &\stackrel{?}{=} (\Phi^\top \Phi + \lambda I)^{-1} \Phi^\top y\\
+(\Phi^\top \Phi + \lambda I)\Phi^\top (\Phi \Phi^\top + \lambda I)^{-1}y &\stackrel{?}{=} \Phi^\top y\\
+(\Phi^\top \Phi \Phi^\top + \lambda \Phi^\top) (\Phi \Phi^\top + \lambda I)^{-1}y &\stackrel{?}{=} \Phi^\top y\\
+\Phi^\top (\Phi \Phi^\top + \lambda I) (\Phi \Phi^\top + \lambda I)^{-1}y &\stackrel{?}{=} \Phi^\top y\\
+\Phi^\top y &= \Phi^\top y
+\end{split}\end{align*}
+\end{solution}
+
+\end{Parts}

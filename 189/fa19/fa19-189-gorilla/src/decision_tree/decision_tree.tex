@@ -1,0 +1,103 @@
+\Question{Decision Tree}
+
+\begin{Parts}
+\Part Entropy Justification \\
+
+Entropy, in physical sciences, is defined as $k_B\ln W$, where $k_B$ is Boltzmann's constant and $W$ is the multiplicity of the coarse-grained state, or the number of ways the coarse-grained state can be arranged in. This is true under the assumption that each microstate that coarse state can be in has equal probability.
+
+In this scenario, we have sequences of coin tosses with bias $p$.
+
+\begin{enumerate}
+  \item Boltzmann's definition of entropy is $-k_B\sum_v p(v)\ln(p(v))$. Show that in the case that each microstate $v$ has the same probability, that this is reduced to the form given above.
+  \item What is the probability of a sequence HHHHHHHH? How many ways can we have a sequence with 8 heads?
+  \item What is the probability of a sequence HTHTHTHT? How many ways can we have a sequence with 4 heads?
+  \item If we characterize a sequence by how many heads appeared, which case has a larger multiplicity: 4 heads, or 0 heads?
+  \item We can see that a coarse-grained state with a large multiplicity has more inherent uncertainty, meaning that we are less certain about its exact specifications than we are about a coarse-grained state with a small multiplicity. In the context of decision trees, why is this useful for splitting?
+\end{enumerate}
+
+\begin{solution}
+  \begin{enumerate}
+    \item If each microstate has equal probability, and there are $W$ microstates, then each microstate has probability $\frac{1}{W}$. Thus, $-k_B\sum_v \frac{1}{W}\ln(\frac{1}{W}) = k_B\ln(W)\sum_v\frac{1}{W} = k_B\ln(W)$
+    \item $p^8$. There is only 1 way to have a sequence with 8 heads.
+    \item $p^4(1-p)^4$. There are $\binom{8}{4}$ ways to have a sequence with 4 heads. Note that when $p=0.5$, the probabilities of every sequence are the same.
+    \item The set of sequences with 4 heads has a larger multiplicity, since there are many more ways to have this sequence.
+    \item A split rule that decreases the total multiplicity of the coarse-grained state is very useful because it removes uncertainty from our coarse-grained state, and in particular, it allows us to be more confident in our classifications.
+  \end{enumerate}
+\end{solution}
+
+\Part Decision Trees \\
+We have a dataset with two features, labeled with classes $+$ and $-$, represented as tuples $(f_1, f_2, +/-)$: $$\{(0,0,-), (1,0,-), (2,0,-), (0,1,+), (1,1,-), (2,1,+), (0,2,+), (1,2,+), (2,2,-)\}$$ Let $L_1$ be the number of class $+$ points in the left node, $L_2$ be the number of class $-$ points in the left node, etc. Here, we will use the splitting rule that splits on the feature that maximizes the value of $|L_1-R_1| \cdot |L_2-R_2|$. What is the decision tree that is generated using this splitting rule that correctly classifies the data given? \\
+\begin{solution}
+    Using this splitting rule, we obtain the following set of rules:
+    \begin{verbatim}
+        if f_2 < 1:
+            return -
+        else:
+            if f_2 < 2:
+                if f_1 < 2:
+                    return +
+                else:
+                    return -
+            else:
+                if f_1 < 1:
+                    return +
+                else:
+                    if f_1 < 2:
+                        return -
+                    else:
+                        return +
+    \end{verbatim}
+\end{solution}
+
+\Part More decision trees \\
+We will now use a different cost function J(S). We will allow J(S) to be defined as the number of points not in a certain class C. Let's assume that we have two different distribution of points. Set 1 is \{AX: 10, AY: 9, BX: 10, BY: 1\}. Set 2 is \{AX: 10, AY: 5, BX: 10, BY: 5\}. Assume that the first split is on the first letter and the second split is on the second letter in the pair. \\
+\begin{enumerate}
+    \item According to J(S), what is the cost for both of the splits? Is this a good cost function?
+    \item Compare the result of computing the split based on the cost function J(s) given above vs a split determined on entropy and surprise.
+\end{enumerate}
+
+\begin{solution}
+    \begin{enumerate}
+        \item In set 1 we note that $J(S) = 9+1 = 10$. For set 2 we also have $J(S) = 5+5 = 10$. Therefore this is a poor cost function since the second data split represents a better split of the data points into 2 sets as compared to the first function. The cost function fails to recognize this difference.
+        \item According to the original cost function we note that both of the cost functions have identical splits for each side. \\
+          Set 1:\\
+            \begin{align*}
+H(S1) &= -\frac{20}{30} \ln \frac{20}{30} - \frac{10}{30} \ln \frac{10}{30} = 0.918 \\
+H(S2) &= -\frac{10}{19} \ln \frac{10}{19} - \frac{9}{19} \ln \frac{9}{19} = 0.998 \\
+H(S3) &= -\frac{10}{11} \ln \frac{10}{11} - \frac{1}{11} \ln \frac{1}{11} = 0.439 \\
+h_{\text{after}} &= \frac{|S_l|H(S_l)+|S_r|H(S_r)}{|S_l| + |S_r|} = 0.793 \\
+\text{info gain} &= 0.125
+            \end{align*}
+          Set 2:\\
+            \begin{align*}
+H(S1) &= -\frac{20}{30} \ln \frac{20}{30} - \frac{10}{30} \ln \frac{10}{30} = .918 \\
+H(S2) &= -\frac{10}{15} \ln \frac{10}{15} - \frac{10}{15} \ln \frac{10}{15} = 0.23 \\
+H(S3) &= -\frac{5}{15} \ln \frac{5}{15} - \frac{5}{15} \ln \frac{5}{15} = 0.23 \\
+h_{\text{after}} &= \frac{|S_l|H(S_l)+|S_r|H(S_r)}{|S_l| + |S_r|} = .46 \\
+\text{info gain} &= 0.458
+            \end{align*}
+          Thus we note that the split in which the data is more equally distributed has a larger info gain as expected.
+
+    \end{enumerate}
+\end{solution}
+
+\Part Random Forests \\
+Now we will consider a situation where we are presented with $n$ training points in a feature space of $d$ dimensions. Assume that we are trying to create a random forest with $t$ trees, where each tree contains exactly $k$ internal nodes, and we only select $f$ out of the $d$ features at each node. Answer the following questions
+\begin{enumerate}
+    \item Suppose that there is a particularly strong predictor-feature for the training points we are currently working with. What is the probability that this feature will not appear in any of the splits of the internal nodes?
+    \item What happens to this probability as $f$ approaches $d$?
+    \item What happens to this probability as $f$ approaches $1$?
+    \item What is the tradeoff between picking more or less features at each node in the random forest?
+\end{enumerate}
+
+\begin{solution}
+    \begin{enumerate}
+        \item There is a total of $k$ internal nodes, and at each internal node, the probability that the strong predictor will never get chosen for one tree is $(\prod^f_{i = 0}(1 - \frac{1}{d - i}))^k$. Since there is a total of $t$ trees, the probability is $(\prod^f_{i = 0}(1 - \frac{1}{d - i}))^{kt}$
+        \item The probability would approach $0$
+        \item The probability would become higher
+        \item The more features you choose at each node, the higher the chances that you will pick the strong predictor-feature. This would result in many trees that all split on the same feature, which would defeat the purpose of having a random forest with different decision trees
+    \end{enumerate}
+\end{solution}
+
+
+\end{Parts}

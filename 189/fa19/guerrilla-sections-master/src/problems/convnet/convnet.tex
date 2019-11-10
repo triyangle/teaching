@@ -1,0 +1,162 @@
+
+\Question{Convnet}
+
+\begin{Parts}
+%Mike's
+\Part Do it! (Quick Check)
+
+\begin{enumerate}
+\item Suppose the input to our CONV layer is the following $5 \times 5$ binary image:
+
+\begin{align*}
+\begin{bmatrix}
+0 & 1 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 & 1 \\
+0 & 1 & 1 & 1 & 0 \\
+\end{bmatrix}
+\end{align*}
+
+which uses the following $3 \times 3$ filter with stride 1:
+
+\begin{align*}
+\begin{bmatrix}
+1 & 0 & 1 \\
+0 & 0 & 0 \\
+1 & 0 & -1 \\
+\end{bmatrix}
+\end{align*}
+
+find the output of this layer for the input. How many parameters does this layer have?
+
+\begin{solution}
+
+\begin{align*}
+\begin{bmatrix}
+-1 & 2 & 1 \\
+1 & 0 & -1 \\
+0 & 0 & 2 \\
+\end{bmatrix}
+\end{align*}
+
+The number of parameters is the size of our filter, which is 9. Remember that this filter is learnt, and that what's in the filter are simply learnt parameters.
+
+\end{solution}
+
+\item Now suppose we have a max pooling layer with kernel size 2 and stride 2 with the following as its input:
+
+\begin{align*}
+\begin{bmatrix}
+1 & 5 & 8 & -1 \\
+0 & 4 & 1 & 3 \\
+9 & 8 & 1 & 2 \\
+1 & 5 & 3 & 3
+\end{bmatrix}
+\end{align*}
+
+find the output to this layer. How many parameters does this layer have?
+
+\begin{solution}
+
+\begin{align*}
+\begin{bmatrix}
+5 & 8 \\
+9 & 3 \\
+\end{bmatrix}
+\end{align*}
+
+this layer has no parameters. Max pooling layers don't have any parameters.
+
+\end{solution}
+
+\end{enumerate}
+
+%Alex's
+\Part
+We have a convolutional network that takes a 23x23 image as its input and returns a 10 outputs. Assume we do not pad the image with zeros and there are no bias terms. \\
+\includegraphics[width=6in]{"src/problems/convnet/alex_net"}
+\\
+How many parameters are there in each layer? \\
+\\
+\begin{solution}
+There are \emph{no} parameters in the subsampling and pooling layer. \\
+\\
+In the first convolution layer, we have three filters. Each filter maps a 23x23 matrix to a 16x16 matrix. Since the filter has stride 1, then the width and length of the filter must be $23-16+1 = 8$. This gives us $3 \times 8 \times 8 = 192$ parameters. \\
+\\
+In the second convolution layer, we have two filters that map the three 8x8 matrices to a 4x4 matrix. Notice that we are using a 3d filter where one of the dimensions of the filter is equal to the number of matrices in the second layer. The other two dimensions are of size $8-4+1 = 5$. So each filter size is $3 \times 5 \times 5 = 75$, so we get $2 \times 3 \times 5 \times 5 = 150$ parameters. \\
+\\
+In the hidden layer, we map our two 2x2 matrices to 15 hidden nodes. So there are $2 \times 2 \times 2 \times 15 = 120$ parameters in the hidden layer. \\
+\\
+In the output layer, there is a parameters from each hidden node to each output node, which is $15 \times 10 = 150$ parameters. \\
+\\
+There are $192 + 150 + 120 + 150 = 612$ parameters in total. \\
+\end{solution}
+
+% Classify
+\Part
+
+Suppose we have a deep convolutional neural network (a conv-net with many layers) that, given a portrait of a person, predicts whether the person in an image is Professor Sahai, or not Professor Sahai. Assume we train this classifier only with full body images of both Professor Sahai and other people. Classify the following features as ``early" if they are features that are more likely to be learned in the early layers of the network, ``late" if they are features that are more likely to be learned in the late layers of the network or ``none" if they aren't likely to be learned in the network.
+\begin{enumerate}
+\item Edges
+\item This image contains glasses
+\item This image contains long hair
+\item The image contains stripes
+\item The person in the image is teaching 189
+\item The person in the image is Stella Yu
+
+\end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+\item Edges - Early
+\item This image contains glasses - Late
+\item This image contains long hair - Late
+\item The image contains stripes - Early
+\item The person in the image is teaching 189 - None; our network learns features of a portrait, not high level concepts that indicate something about the person in the image
+\item The person in the image is Stella Yu - None; our network predicts if Anant Sahai or not, doesn't do anything about other professors
+
+\end{enumerate}
+\end{solution}
+
+%Ed's
+\Part
+Convolutional filters: For the following problems, assume that there is zero padding.
+\\\\ a) Suppose you had a n by n filter
+        $$ \dfrac{1}{n^2}
+        \begin{bmatrix}
+        1 & 1 & \dots & 1 \\
+        1 & 1 & \dots & 1 \\
+        \dots & \dots & \dots & \dots \\
+        1 & 1 & \dots & 1 \\
+        \end{bmatrix}$$
+\\\\ What is the effect of increasing $n$ on the result of the convolution of the filter with the input image?
+\begin{solution}
+Increasing $n$ will blur the image more
+\end{solution}
+\\\\ b) Suppose you wanted your convolutional layer to learn vertical edge features. Using a 3 by 3 matrix as your filter, what would the parameters inside that filter be? \textit{Hint: we want the result of the filter to be large if there is a vertical line, and small otherwise. We also want to be able to mitigate horizontal lines. Try drawing out small examples of vertical lines/horizontal lines and think about what the results should be.}
+\begin{solution}
+    $$
+    \begin{bmatrix}
+    1 & 0 & -1 \\
+    1 & 0 & -1 \\
+    1 & 0 & -1 \\
+    \end{bmatrix}$$
+\end{solution}
+\\\\ c) Suppose you had a 3 by 3 filter
+        $$
+        \begin{bmatrix}
+        -1 & -1 & -1 \\
+        -1 & 8 & -1 \\
+        -1 & -1 & -1 \\
+        \end{bmatrix}$$
+\\\\ What feature(s) does this filter learn?
+\begin{solution}
+This filter learns edge features at any orientation. 
+\end{solution}
+\\\\ d) Using the filter in part (c), give an approach for sharpening an image.
+\begin{solution}
+Since we know how to find edges using the filter in part (c), we can take the result of convolving the filter in part (c) and add it back to the image to effectively emphasize edges in the original image.
+\end{solution}
+
+\end{Parts}
