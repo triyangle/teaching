@@ -1,0 +1,3 @@
+[submodule "189/CS-189"]
+	path = 189/CS-189
+	url = git@github.com:triyangle/CS-189.git
